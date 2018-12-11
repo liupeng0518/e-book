@@ -1,14 +1,17 @@
 
+# nginx-ingress 介绍
 Ingress 是一种 Kubernetes 资源，也是将 Kubernetes 集群内服务暴露到外部的一种方式。目前helm仓库中已经有了nginx-ingress的资源。  
 项目地址: https://kubernetes.github.io/ingress-nginx  
 github地址: https://github.com/kubernetes/ingress-nginx/  
 
-部署 Ingress Controller
-Ingress 只是一个统称，其由 Ingress 和 Ingress Controller 两部分组成。Ingress 用作将原来需要手动配置的规则抽象成一个 Ingress 对象，使用 YAML 格式的文件来创建和管理。Ingress Controller 用作通过与 Kubernetes API 交互，动态的去感知集群中 Ingress 规则变化。  
-目前可用的 Ingress Controller 类型有很多，比如：Nginx、HAProxy、Traefik 等，我们将演示如何部署一个基于 Nginx 的 Ingress Controller。  
-这里我们使用 Helm 来部署，在开始部署前，请确认您已经安装和配置好 Helm 相关环境。  
-查找软件仓库中是否有 Nginx Ingress 包:
+# 部署 Ingress Controller
+Ingress 只是一个统称，其由 Ingress 和 Ingress Controller 两部分组成。Ingress 用作将原来需要手动配置的规则抽象成一个 Ingress 对象，使用 YAML 格式的文件来创建和管理。Ingress Controller 用作通过与 Kubernetes API 交互，动态的去感知集群中 Ingress 规则变化。
 
+目前可用的 Ingress Controller 类型有很多，比如：Nginx、HAProxy、Traefik 等，我们将演示如何部署一个基于 Nginx 的 Ingress Controller。  
+
+这里我们使用 Helm 来部署，在开始部署前，请确认您已经安装和配置好 Helm 相关环境。  
+
+查找软件仓库中是否有 Nginx Ingress 包:
 ```bash
 [root@lab1 ~]# helm search nginx-ingress
 NAME                            	CHART VERSION	APP VERSION	DESCRIPTION                                                 
