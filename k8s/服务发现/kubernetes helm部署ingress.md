@@ -21,14 +21,12 @@ stable/nginx-lego               	0.3.1        	           	Chart for nginx-ingre
 ```
 
 使用 Helm 部署 Nginx Ingress Controller
-Ingress Controller 本身对外暴露的方式有几种，比如：hostNetwork、externalIP 等。这里我们采用 externalIP 的方式进行，如果你要使用 hostNetwork 方式，可以使用 controller.hostNetwork=true 参数进行设置。
-
-
-
+Ingress Controller 本身对外暴露的方式有几种，比如：hostNetwork、externalIP 等。这里我们采用 hostNetwork 方式，可以使用 controller.hostNetwork=true 参数进行设置。
+controller.service.externalIPs[0]=10.7.12.201,controller.service.externalIPs[1]=10.7.12.202,controller.service.externalIPs[2]=10.7.12.203
 ```bash
 # 这里使用的aliyun的helm仓库, 这样就不用替换repository(默认是gcr,国内无法访问)
-# 由于急群中开启了RBAC认证，所以这里部署的时候需要启用 RBAC 支持
-[root@lab1 ~]# helm install --name nginx-ingress --set "rbac.create=true,controller.service.externalIPs[0]=10.7.12.201,controller.service.externalIPs[1]=10.7.12.202,controller.service.externalIPs[2]=10.7.12.203" stable/nginx-ingress
+# 由于集群开启了RBAC认证，所以这里部署的时候需要启用 RBAC 支持
+[root@lab1 ~]# helm install --name nginx-ingress --set "rbac.create=true, controller.hostNetwork=true" stable/nginx-ingress
 
 ```
 
