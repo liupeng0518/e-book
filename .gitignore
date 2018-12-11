@@ -5,3 +5,4 @@ test.md
 
 # Ignore everything in the directory "bin"
 _book/*
+node_modules/*
