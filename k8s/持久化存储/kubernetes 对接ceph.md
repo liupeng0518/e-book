@@ -17,10 +17,10 @@ data:
 注意: 文件中的key需要在ceph mon节点使用`ceph auth get-key client.admin | base64`命令对获取的key进行base64。
 
 保存定义的文件，如`ceph-secret.yaml`, 之后创建一个secret:
-
-<pre class=" CodeMirror-line "># kubectl create -f ceph-secret.yaml </pre>
-
-<pre class=" CodeMirror-line ">secret "ceph-secret" created</pre>
+```bash
+# kubectl create -f ceph-secret.yaml 
+secret "ceph-secret" created
+```
 
 ##### 创建Persistent Volume
 
