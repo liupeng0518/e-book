@@ -2,6 +2,8 @@
 
 ## KUBERNETES  
 
+* [部署](k8s/部署/README.md)
+  * [kubeadm 部署1.11.x HA集群](k8s/部署/kubeadm 部署1.11.x HA集群.md)
 * [helm](k8s/helm/README.md)
 * [服务发现](k8s/服务发现/README.md)  
   * [kubernetes helm部署ingress](k8s/服务发现/kubernetes helm部署ingress.md)  
