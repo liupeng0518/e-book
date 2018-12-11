@@ -398,3 +398,5 @@ ceph-claim   Bound     pvc-311c99c2-fc55-11e8-8dca-525400d5b8cc   1Gi        ROX
 
 ```
 
+# 参考
+本文链接：https://www.opsdev.cn/post/Ceph-RBD.html
