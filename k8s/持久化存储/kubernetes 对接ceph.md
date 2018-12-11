@@ -112,7 +112,7 @@ ceph-claim        Bound     ceph-pv     1Gi        RWO                          
 apiVersion: v1
 kind: Pod
 metadata:
-  name: ceph-pod2           
+  name: ceph-pod
 spec:
   containers:
   - name: ceph-busybox
@@ -133,14 +133,14 @@ spec:
 
 ```
 #kubectl create -f ceph-pod.yaml 
-pod "ceph-pod2" created
+pod "ceph-pod" created
 
 ```
 
 ```
 kubectl get pods -o wide
 NAME                                READY     STATUS    RESTARTS   AGE       IP              NODE
-ceph-pod2                           1/1       Running   0          20s       10.139.54.211   app31.add.bjdt.qihoo.net
+ceph-pod                           1/1       Running   0          20s       10.139.54.211   app31.add.bjdt.qihoo.net
 
 ```
 
@@ -281,7 +281,7 @@ ceph-claim        Bound     pvc-c32aca7e-38cd-11e8-af69-f0921c10a7bc   1Gi      
 apiVersion: v1
 kind: Pod
 metadata:
-  name: static-ceph-pod2
+  name: static-ceph-pod
 spec:
   containers:
   - name: ceph-busybox
@@ -301,9 +301,9 @@ spec:
 保存定义Pod的文件，我们创建一个Pod:
 
 ```
-# kubectl get pod static-ceph-pod2 
+# kubectl get pod static-ceph-pod
 NAME               READY     STATUS    RESTARTS   AGE
-static-ceph-pod2   1/1       Running   0          40s
+static-ceph-pod   1/1       Running   0          40s
 
 ```
 
