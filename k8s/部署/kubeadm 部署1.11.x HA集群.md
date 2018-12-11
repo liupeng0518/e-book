@@ -765,6 +765,7 @@ token: <超长字符串>
 ```
 
 参考文档:  
+
 https://kubernetes.io/docs/setup/independent/install-kubeadm/
 https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/
 https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/
