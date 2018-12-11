@@ -43,6 +43,7 @@ nginx-ingress-default-backend   ClusterIP      10.254.206.175   <none>          
 
 访问 Nginx Ingress Controller
 我们可以使用以下命令来获取 Nginx 的 HTTP 和 HTTPS 地址。
+
 ```bash
 $ kubectl --namespace default get services -o wide -w nginx-ingress-controller
 NAME                       TYPE           CLUSTER-IP     EXTERNAL-IP                                       PORT(S)                    AGE       SELECTOR
