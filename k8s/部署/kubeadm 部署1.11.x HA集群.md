@@ -767,9 +767,16 @@ token: <超长字符串>
 参考文档:  
 
 https://kubernetes.io/docs/setup/independent/install-kubeadm/
+
 https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/
+
 https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/
+
 https://kubernetes.io/docs/setup/independent/high-availability/
+
 https://sealyun.com/post/k8s-ipvs/
+
 https://www.maogx.win/posts/33/
+
 https://www.jianshu.com/p/31bee0cecaf2
+
