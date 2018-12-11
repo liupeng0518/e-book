@@ -307,7 +307,7 @@ static-ceph-pod   1/1       Running   0          40s
 
 ```
 
-ok, 已经成功的将该PVC挂载到了Pod中的容器中。
+现在，我们已经成功的将该PVC挂载到了Pod中的容器中。
 
 # 对接问题
 
