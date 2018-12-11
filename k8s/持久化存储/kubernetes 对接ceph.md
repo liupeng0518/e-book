@@ -1,7 +1,7 @@
 # kubernetes持久化存储Ceph RBD
-### 静态PV
+## 静态PV
 
-##### 创建ceph secret
+### 创建ceph secret
 
 在ceph mon节点运行`ceph auth get-key client.admin`命令获取admin的key。定义一个ceph secret文件。
 
@@ -22,7 +22,7 @@ data:
 secret "ceph-secret" created
 ```
 
-##### 创建Persistent Volume
+### 创建Persistent Volume
 
 创建一个PV对象，使用下面文件的定义:
 
@@ -69,7 +69,7 @@ ceph-pv     1Gi        RWO            Recycle          Available                
 
 ```
 
-##### 创建Persistent Volume Claim
+### 创建Persistent Volume Claim
 
 PVC需要指定访问模式和存储的大小，当前只支持这两个属性，一个PVC绑定到一个PV上。一旦PV被绑定到PVC上就不能被其它的PVC所绑定。它们是一对一的关系。但是多个Pod可以使用同一个PVC进行卷的挂载。
 
@@ -104,7 +104,7 @@ ceph-claim        Bound     ceph-pv     1Gi        RWO                          
 
 ```
 
-##### 创建Pod
+### 创建Pod
 
 定义一个Pod，在Pod里面启动一个container,并使用PVC去挂载Ceph RBD卷为读写模式。
 
@@ -144,9 +144,9 @@ ceph-pod2                           1/1       Running   0          20s       10.
 
 ```
 
-### 动态PV
+## 动态PV
 
-##### 创建RBD pool
+### 创建RBD pool
 
 虽然ceph提供了默认的pool rbd，但是建议创建一个新的pool为kubernetes持久化使用。在ceph的monitors节点创建一个名为`kube`的pool.
 
@@ -156,31 +156,25 @@ ceph-pod2                           1/1       Running   0          20s       10.
 
 ```
 
-##### 创建ceph secret
+####创建ceph secret
 
 与静态创建的ceph-secret是同一个，这里就不在重复创建。
 
-##### 创建kube用户的ceph secret
+### 创建kube用户的ceph secret
 
 在ceph monitors节点运行命令`ceph auth get-key client.kube`获取kube用户的key。并对该用户key进行base64用于下面的文件。
 
-<pre class=" CodeMirror-line ">apiVersion: v1</pre>
-
-<pre class=" CodeMirror-line ">kind: Secret</pre>
-
-<pre class=" CodeMirror-line ">metadata:</pre>
-
-<pre class=" CodeMirror-line ">  name: ceph-kube-secret</pre>
-
-<pre class=" CodeMirror-line ">  namespace: default</pre>
-
-<pre class=" CodeMirror-line ">data:</pre>
-
-<pre class=" CodeMirror-line ">  key: QVFCbEV4OVpmaGJtQ0JBQW55d2Z0NHZtcS96cE42SW1JVUQvekE9PQ== </pre>
-
-<pre class=" CodeMirror-line ">type:</pre>
-
-<pre class=" CodeMirror-line ">  kubernetes.io/rbd</pre>
+```
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ceph-kube-secret
+  namespace: default
+data:
+  key: QVFCbEV4OVpmaGJtQ0JBQW55d2Z0NHZtcS96cE42SW1JVUQvekE9PQ== 
+type:
+  kubernetes.io/rbd
+```
 
 保存定义的ceph secret文件，如ceph-kube-secret.yaml。执行如下命令创建secret:
 
@@ -199,7 +193,7 @@ ceph-kube-secret   kubernetes.io/rbd   1         2m
 
 ```
 
-##### 创建动态RBD StorageClass
+### 创建动态RBD StorageClass
 
 在创建StorageClass资源前,先介绍下StorageClass的概念:`StorageClass` 为管理员提供了描述存储`class`的方法。 不同的 `class` 可能会映射到不同的服务质量等级或备份策略，或由群集管理员确定的任意策略。 Kubernetes 本身不清楚各种 `class` 代表的什么。这个概念在其他存储系统中有时被称为“配置文件”。StorageClass不仅仅使用与ceph RBD还可以用于`Cinder`,`NFS`,`Glusterfs`等等。
 
@@ -242,7 +236,7 @@ dynamic (default)   kubernetes.io/rbd   54s
 
 ```
 
-##### 创建Persistent Volume Claim
+### 创建Persistent Volume Claim
 
 具体的描述细节请看创建静态PV时，对PVC的描述。或查看官方文档。下面我们直接定义PVC文件。
 
@@ -279,7 +273,7 @@ ceph-claim        Bound     pvc-c32aca7e-38cd-11e8-af69-f0921c10a7bc   1Gi      
 
 我们看到`ceph-claim`这个PVC已经绑定到了`pvc-c32aca7e-38cd-11e8-af69-f0921c10a7bc`这个PV,而该PV是由名为`dynamic`的storageclass动态创建的。
 
-##### 创建Pod
+### 创建Pod
 
 我们定义一个Pod来将刚刚创建的PVC挂载到该Pod的容器中去。我们定义的Pod的文件内容如下:
 
@@ -315,20 +309,11 @@ static-ceph-pod2   1/1       Running   0          40s
 
 ok, 已经成功的将该PVC挂载到了Pod中的容器中。
 
-
-
-
-
-
-
-
-
-
-
+# 对接问题
 
 随着 k8s 1.13 发布， kubeadm 项目逐步进入GA，目前来看 kubeadm 极大简化了k8s部署，趋势已定。  
 k8s 可选持久化数据存储的方案比较多，像nfs ceph glusterfs等  
-在这里我们通过kubeadm部署完成k8s后，在对接ceph rbd时遇到创建 RBD PersistentVolume 失败：  
+在这里我们通过kubeadm部署完成k8s后，在对接ceph rbd时遇到创建 RBD PersistentVolume 失败:  
 
 ```bash  
 Failed to provision volume with StorageClass "": failed to create rbd image: executable file not found in $PATH, command output:
@@ -340,7 +325,7 @@ https://github.com/kubernetes-incubator/external-storage/tree/master/ceph/rbd/de
 
 按照说明：  
 
-# 1. 创建所需资源
+### 1. 创建所需资源
 ```bash
 cd ~/kubernetes-incubator/external-storage/ceph/rbd/deploy
 NAMESPACE=kube-system # change this if you want to deploy it in another namespace
@@ -351,7 +336,7 @@ kubectl -n $NAMESPACE apply -f ./rbac
 即可成功部署rbd Provisioner。
 
 
-# 2. 创建sc
+### 2. 创建sc
 
 ```bash
 kind: StorageClass
@@ -375,7 +360,7 @@ parameters:
 
 ```
 
-# 3. 创建 secret
+### 3. 创建 secret
 ```bash
 apiVersion: v1
 kind: Secret
@@ -390,7 +375,7 @@ type:
 
 ```
 
-# 4. 测试
+### 4. 测试
 
 创建测试pvc
 ```bash
