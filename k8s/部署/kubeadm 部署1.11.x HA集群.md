@@ -707,7 +707,7 @@ spec:
 kubectl apply -f kubernetes-dashboard.yaml
 ```
 
-##10.5 访问 Dashboard
+## 10.5 访问 Dashboard
 
 地址： https://<Your-IP>:31111/
 
