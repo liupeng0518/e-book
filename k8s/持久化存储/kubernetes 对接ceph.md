@@ -318,10 +318,9 @@ k8s 可选持久化数据存储的方案比较多，像nfs ceph glusterfs等
 ```bash  
 Failed to provision volume with StorageClass "": failed to create rbd image: executable file not found in $PATH, command output:
 ```
-根据这个 issue (https://github.com/kubernetes/kubernetes/issues/38923) 的描述，出错的原因是 kube-controller-manager 容器中不包含 rbd 程序导致 RBD 卷无法正常创建。
+根据这个 [issue] (https://github.com/kubernetes/kubernetes/issues/38923) 的描述，出错的原因是 kube-controller-manager 容器中不包含 rbd 程序导致 RBD 卷无法正常创建。
 
-目前可以使用kubernetes-incubator/external-storage里的第三方 RBD Provisioner ，github仓库地址：
-https://github.com/kubernetes-incubator/external-storage/tree/master/ceph/rbd/deploy
+目前可以使用kubernetes-incubator/external-storage里的第三方 RBD Provisioner ，[github仓库地址](https://github.com/kubernetes-incubator/external-storage/tree/master/ceph/rbd/deploy)
 
 按照说明：  
 
