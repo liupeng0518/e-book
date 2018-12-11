@@ -702,12 +702,12 @@ spec:
   type: NodePort
 ```
 
-## 10.4 启动 Dashboard
+## 10.3 启动 Dashboard
 ```bash
 kubectl apply -f kubernetes-dashboard.yaml
 ```
 
-## 10.5 访问 Dashboard
+## 10.4 访问 Dashboard
 
 地址： https://<Your-IP>:31111/
 
@@ -764,7 +764,7 @@ namespace: 11 bytes
 token: <超长字符串>
 ```
 
-参考文档
+参考文档:  
 https://kubernetes.io/docs/setup/independent/install-kubeadm/
 https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/
 https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/
