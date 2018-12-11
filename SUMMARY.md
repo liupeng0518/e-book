@@ -3,7 +3,7 @@
 ## KUBERNETES  
 * [KUBERNETES](k8s/README.md)  
 
-* [helm]k8s/helm/README.md)  
+* [helm](k8s/helm/README.md)
 
 * [服务发现](k8s/服务发现/README.md)  
   * [kubernetes helm部署ingress](k8s/服务发现/kubernetes helm部署ingress.md)  
