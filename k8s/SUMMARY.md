@@ -4,7 +4,8 @@
 
 ### [helm](README.md)
 
-### [服务发现](服务发现/README.md)
+### 服务发现
+* [服务发现介绍](服务发现/README.md)
 * [kubernetes helm部署ingress](服务发现/kubernetes helm部署ingress.md)
 
 ### [持久化存储](持久化存储/README.md)
