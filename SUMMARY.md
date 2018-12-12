@@ -7,7 +7,7 @@
 * [helm](k8s/helm/README.md)
   * [helm部署](k8s/helm/helm部署.md)
 * [服务发现](k8s/服务发现/README.md)  
-  * [kubernetes helm部署ingress](k8s/服务发现/kubernetes_helm部署ingress.md)  
+  * [kubernetes helm部署ingress](k8s/服务发现/nginx-ingress部署.md)  
 * [持久化存储](k8s/持久化存储/README.md)
   * [kubernetes 对接ceph](k8s/持久化存储/kubernetes对接ceph.md)  
 * [声明式API](k8s/声明式API/README.md)  
