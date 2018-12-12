@@ -37,15 +37,16 @@ nginx-ingress-controller        LoadBalancer   10.3.255.138   119.28.121.125   8
 
 EXTERNAL-IP 就是我们需要的外部 IP 地址，通过访问它就可以访问到集群内部的服务了，我们可以将想要的域名配置这个IP的DNS记录，这样就可以直接通过域名来访问了。具体访问哪个 Service, 这个就是我们创建的 Ingress 里面所配置规则的了，可以通过匹配请求的 Host 和 路径这些来转发到不同的后端 Service.
 
-# 使用 DaemonSet + hostNetwork(或者hostPort) 导入流量
-在使用daemonset的时候可以选择两种方式：
+# 使用 DaemonSet + hostNetwork(或hostPort或nodePort) 导入流量
+在使用daemonset的时候可以有几种方式：
 
- - hostnetwork 
- - hostport
+ - hostNetwork 
+ - hostPort
+ - nodePort
 
-这种方式实际是使用集群内的某些节点来暴露流量，使用 DeamonSet 部署，保证让符合我们要求的节点都会启动一个 Nginx 的 Ingress Controller 来监听端口，这些节点我们叫它 边缘节点，因为它们才是真正监听端口，让外界流量进入集群内部的节点，这里我使用集群内部的一个节点来暴露流量，它有自己的公网 IP 地址，并且 80 和 443 端口没有被其它占用。
+这种方式实际是使用集群内的某些节点来暴露流量，使用 DeamonSet 部署，保证让符合我们要求的节点都会启动一个 Nginx 的 Ingress Controller 来监听端口，这些节点我们叫它 边缘节点，因为它们才是真正监听端口，让外界流量进入集群内部的节点，这里我使用集群内部的一个节点来暴露流量，并且 80 和 443 端口没有被其它占用。
 
-首先，看看集群有哪些节点：
+首先，查看集群节点：
 ```bash
 ➜  ~ kubectl get node
 NAME   STATUS   ROLES    AGE   VERSION
@@ -125,6 +126,17 @@ LISTEN     0      128         :::80                      :::*                   
 [root@lab4 ~]# ps aux|grep nginx|grep -v grep
 root     27862  0.0  0.0   4040   356 ?        Ss   18:31   0:00 /usr/bin/dumb-init /nginx-ingress-controller --default-backend-service=kube-system/nginx-ingress-default-backend --election-id=ingress-controller-leader --ingress-class=nginx --configmap=kube-system/nginx-ingress-controller
 root     27872  0.6  0.2  39700 19892 ?        Ssl  18:31   0:02 /nginx-ingress-controller --default-backend-service=kube-system/nginx-ingress-default-backend --election-id=ingress-controller-leader --ingress-class=nginx --configmap=kube-system/nginx-ingress-controller
+
+```
+这时会在lab4上启动进程监听80和443：
+可以通过浏览器访问 lab4或ip：
+
+```
+[root@lab1 deploy]# curl http://10.7.12.204
+default backend - 404
+
+[root@lab1 deploy]# curl -k  https://10.7.12.204
+default backend - 404
 
 ```
 
@@ -209,5 +221,30 @@ my-nginx   my-nginx             80        36s
 然后浏览器通过域名访问，可以看到 Welcome to nginx! 这个 nginx 默认的主页。
 
 注意：定义 Ingress 的时候最好加上 kubernetes.io/ingress.class 这个 annotation，在有多个 Ingress Controller 的情况下让请求能够被我们安装的这个处理（云厂商托管的 Kubernetes 集群一般会有默认的 Ingress Controller)
+
+# 官方yaml文件部署
+
+github地址: https://github.com/kubernetes/ingress-nginx/  
+
+
+官方部署文档：
+https://github.com/kubernetes/ingress-nginx/blob/nginx-0.20.0/docs/deploy/index.md
+
+我们可以如下方式直接部署：
+
+```bash
+git clone https://github.com/kubernetes/ingress-nginx.git
+git checkout nginx-0.20.0
+cd ~/ingress-nginx/deploy
+kubectl apply -f mandatory.yaml
+
+# baremetal方式部署
+# 这里可以修改yaml，指定nodePort，默认是动态生成
+kubectl apply -f provider/baremetal/service-nodeport.yaml 
+```
+
+部署完成之后，可以访问nodePort，同样会返回;
+
+default backend - 404
 
 原文连接：https://imroc.io/posts/kubernetes/use-nginx-ingress-controller-to-expose-service/
