@@ -37,7 +37,12 @@ nginx-ingress-controller        LoadBalancer   10.3.255.138   119.28.121.125   8
 
 EXTERNAL-IP 就是我们需要的外部 IP 地址，通过访问它就可以访问到集群内部的服务了，我们可以将想要的域名配置这个IP的DNS记录，这样就可以直接通过域名来访问了。具体访问哪个 Service, 这个就是我们创建的 Ingress 里面所配置规则的了，可以通过匹配请求的 Host 和 路径这些来转发到不同的后端 Service.
 
-# 使用 DaemonSet + hostPort 导入流量
+# 使用 DaemonSet + hostNetwork(或者hostPort) 导入流量
+在使用daemonset的时候可以选择两种方式：
+
+ - hostnetwork 
+ - hostport
+
 这种方式实际是使用集群内的某些节点来暴露流量，使用 DeamonSet 部署，保证让符合我们要求的节点都会启动一个 Nginx 的 Ingress Controller 来监听端口，这些节点我们叫它 边缘节点，因为它们才是真正监听端口，让外界流量进入集群内部的节点，这里我使用集群内部的一个节点来暴露流量，它有自己的公网 IP 地址，并且 80 和 443 端口没有被其它占用。
 
 首先，看看集群有哪些节点：
@@ -75,7 +80,8 @@ stable/nginx-lego               	0.3.1        	           	Chart for nginx-ingre
 
 ```
 
-接下来我们覆盖一些默认配置来安装，我们选择stable的0.9.5，注意这里集群开启了rbac，所以这里也要开启rbac支持，否则会导致controller无法启动:
+接下来我们覆盖一些默认配置来安装，我们选择stable的0.9.5，注意这里集群开启了rbac，所以这里也要开启rbac支持，否则会导致controller无法启动。
+同时我们这里选择了hostNetwork的方式：
 ```bash
 helm install stable/nginx-ingress \
   --namespace kube-system \
@@ -103,13 +109,30 @@ nginx-ingress-default-backend-7744786499-kmfrx   1/1       Running   0          
 ```bash
 $ kubectl describe -n kube-system po/nginx-ingress-controller-9nxsw
 ```
-这两个 pod 的镜像在 quay.io 下，国内拉取可能会比较慢。
+这里我们可以在lab4节点上查看：
+```bash
+
+# 查看宿主机端口监听
+[root@lab4 ~]# ss -antlp|grep '80\|443'
+LISTEN     0      128          *:443                      *:*                   users:(("nginx",pid=28179,fd=15),("nginx",pid=28175,fd=15),("nginx",pid=27967,fd=15))
+LISTEN     0      128          *:18080                    *:*                   users:(("nginx",pid=28179,fd=17),("nginx",pid=28175,fd=17),("nginx",pid=27967,fd=17))
+LISTEN     0      128          *:80                       *:*                   users:(("nginx",pid=28179,fd=13),("nginx",pid=28175,fd=13),("nginx",pid=27967,fd=13))
+LISTEN     0      128         :::443                     :::*                   users:(("nginx",pid=28179,fd=16),("nginx",pid=28175,fd=16),("nginx",pid=27967,fd=16))
+LISTEN     0      128         :::18080                   :::*                   users:(("nginx",pid=28179,fd=18),("nginx",pid=28175,fd=18),("nginx",pid=27967,fd=18))
+LISTEN     0      128         :::80                      :::*                   users:(("nginx",pid=28179,fd=14),("nginx",pid=28175,fd=14),("nginx",pid=27967,fd=14))
+
+# 查看宿主机所启动的进程
+[root@lab4 ~]# ps aux|grep nginx|grep -v grep
+root     27862  0.0  0.0   4040   356 ?        Ss   18:31   0:00 /usr/bin/dumb-init /nginx-ingress-controller --default-backend-service=kube-system/nginx-ingress-default-backend --election-id=ingress-controller-leader --ingress-class=nginx --configmap=kube-system/nginx-ingress-controller
+root     27872  0.6  0.2  39700 19892 ?        Ssl  18:31   0:02 /nginx-ingress-controller --default-backend-service=kube-system/nginx-ingress-default-backend --election-id=ingress-controller-leader --ingress-class=nginx --configmap=kube-system/nginx-ingress-controller
+
+```
 
 运行成功我们就可以创建 Ingress 来将外部流量导入集群内部啦，外部 IP 是我们的 边缘节点 的 IP，公网和内网 IP 都算，我用的 lab4 这个节点，并且它有公网 IP，我就可以通过公网 IP 来访问了，如果再给这个公网 IP 添加 DNS 记录，我就可以用域名访问了。
 
 测试
 我们来创建一个服务测试一下，先创建一个 my-nginx.yaml
-
+```bash
 vi my-nginx.yaml
 粘贴以下内容：
 
@@ -158,10 +181,32 @@ spec:
         backend:
           serviceName: my-nginx
           servicePort: 80
+```
 创建：
-
+```
 kubectl apply -f my-nginx.yaml
-然后浏览器通过 IP 或域名访问下，当你看到 Welcome to nginx! 这个 nginx 默认的主页说明已经成功啦。
+```
+
+查看状态：
+```bash
+[root@lab1 ingeress]# kubectl get pod
+NAME                                      READY     STATUS    RESTARTS   AGE
+my-nginx-59497d7745-h6h4r                 1/1       Running   0          30s
+nobby-scorpion-mariadb-756d49cfb8-z7jtb   1/1       Running   0          2h
+static-ceph-pod                           1/1       Running   0          2h
+[root@lab1 ingeress]# kubectl get svc
+NAME                     TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+kubernetes               ClusterIP   10.96.0.1       <none>        443/TCP    1d
+my-nginx                 ClusterIP   10.99.42.39     <none>        80/TCP     34s
+nobby-scorpion-mariadb   ClusterIP   10.103.35.242   <none>        3306/TCP   2h
+[root@lab1 ingeress]# kubectl get ing
+NAME       HOSTS      ADDRESS   PORTS     AGE
+my-nginx   my-nginx             80        36s
+
+```
+没有dns，那么可以通过配置/etc/hsots 方式解析。
+
+然后浏览器通过域名访问，可以看到 Welcome to nginx! 这个 nginx 默认的主页。
 
 注意：定义 Ingress 的时候最好加上 kubernetes.io/ingress.class 这个 annotation，在有多个 Ingress Controller 的情况下让请求能够被我们安装的这个处理（云厂商托管的 Kubernetes 集群一般会有默认的 Ingress Controller)
 
