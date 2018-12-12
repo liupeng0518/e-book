@@ -75,12 +75,13 @@ stable/nginx-lego               	0.3.1        	           	Chart for nginx-ingre
 
 ```
 
-接下来我们覆盖一些默认配置来安装，我们选择stable的0.9.5:
+接下来我们覆盖一些默认配置来安装，我们选择stable的0.9.5，注意这里集群开启了rbac，所以这里也要开启rbac支持，否则会导致controller无法启动:
 ```bash
 helm install stable/nginx-ingress \
   --namespace kube-system \
   --name nginx-ingress \
   --version=0.9.5 \
+  --set rbac.create=true \
   --set controller.kind=DaemonSet \
   --set controller.daemonset.useHostPort=true \
   --set controller.nodeSelector.node=edge \
@@ -92,14 +93,15 @@ helm install stable/nginx-ingress \
 可以看下是否成功启动:
 
 ```bash
-[root@lab1 ~]# kubectl get pod -n kube-system -l app=helm
-NAME                             READY     STATUS    RESTARTS   AGE
-tiller-deploy-6d7964547c-jqmw8   1/1       Running   0          11h
+[root@lab1 ~]# kubectl get pods -owide -n kube-system | grep nginx-ingress
+nginx-ingress-controller-9nxsw                   1/1       Running   0          1m        10.244.3.198   lab4      <none>
+nginx-ingress-default-backend-7744786499-kmfrx   1/1       Running   0          1m        10.244.3.199   lab4      <none>
 
 ```
 如果状态不是 Running 可以查看下详情:
-
-$ kubectl describe -n kube-system po/nginx-ingress-controller-b47h9
+```bash
+$ kubectl describe -n kube-system po/nginx-ingress-controller-9nxsw
+```
 这两个 pod 的镜像在 quay.io 下，国内拉取可能会比较慢。
 
 运行成功我们就可以创建 Ingress 来将外部流量导入集群内部啦，外部 IP 是我们的 边缘节点 的 IP，公网和内网 IP 都算，我用的 lab4 这个节点，并且它有公网 IP，我就可以通过公网 IP 来访问了，如果再给这个公网 IP 添加 DNS 记录，我就可以用域名访问了。
