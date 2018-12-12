@@ -47,18 +47,20 @@ NAME   STATUS   ROLES    AGE   VERSION
 lab1   Ready    master   17h   v1.11.5
 lab2   Ready    master   17h   v1.11.5
 lab3   Ready    master   17h   v1.11.5
-lab4   Ready    <none>   17h   v1.11.3
+lab4   Ready    <none>   17h   v1.11.5
 
 ```
 
-我想要 10.0.0.3 这个节点作为 边缘节点 来暴露流量，我来给它加个 label，以便后面我们用 DeamonSet 部署 Nginx Ingress Controller 时能绑到这个节点上，我这里就加个名为 node:edge 的 label :
+我想要 lab4 这个节点作为 边缘节点 来暴露流量，我来给它加个 label，以便后面我们用 DeamonSet 部署 Nginx Ingress Controller 时能绑到这个节点上，我这里就加个名为 node:edge 的 label :
+```bash
+$ kubectl label node lab4 node=edge
+node "lab4" labeled
+```
 
-$ kubectl label node 10.0.0.3 node=edge
-node "10.0.0.3" labeled
 如果 label 加错了可以这样删掉:
 
-$ kubectl label node 10.0.0.3 node-
-node "10.0.0.3" labeled
+$ kubectl label node lab4 node-
+node "lab4" labeled
 接下来我们覆盖一些默认配置来安装:
 
 helm install stable/nginx-ingress \
@@ -79,7 +81,7 @@ nginx-ingress-default-backend-9c5d6df7d-7dwll   1/1       Running   0          1
 $ kubectl describe -n kube-system po/nginx-ingress-controller-b47h9
 这两个 pod 的镜像在 quay.io 下，国内拉取可能会比较慢。
 
-运行成功我们就可以创建 Ingress 来将外部流量导入集群内部啦，外部 IP 是我们的 边缘节点 的 IP，公网和内网 IP 都算，我用的 10.0.0.3 这个节点，并且它有公网 IP，我就可以通过公网 IP 来访问了，如果再给这个公网 IP 添加 DNS 记录，我就可以用域名访问了。
+运行成功我们就可以创建 Ingress 来将外部流量导入集群内部啦，外部 IP 是我们的 边缘节点 的 IP，公网和内网 IP 都算，我用的 lab4 这个节点，并且它有公网 IP，我就可以通过公网 IP 来访问了，如果再给这个公网 IP 添加 DNS 记录，我就可以用域名访问了。
 
 测试
 我们来创建一个服务测试一下，先创建一个 my-nginx.yaml
