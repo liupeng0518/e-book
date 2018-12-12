@@ -91,9 +91,12 @@ helm install stable/nginx-ingress \
 
 可以看下是否成功启动:
 
-$ kubectl get pods -n kube-system | grep nginx-ingress
-nginx-ingress-controller-b47h9                  1/1       Running   0          1h
-nginx-ingress-default-backend-9c5d6df7d-7dwll   1/1       Running   0          1h
+```bash
+[root@lab1 ~]# kubectl get pod -n kube-system -l app=helm
+NAME                             READY     STATUS    RESTARTS   AGE
+tiller-deploy-6d7964547c-jqmw8   1/1       Running   0          11h
+
+```
 如果状态不是 Running 可以查看下详情:
 
 $ kubectl describe -n kube-system po/nginx-ingress-controller-b47h9
