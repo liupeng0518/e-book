@@ -83,7 +83,8 @@ helm install stable/nginx-ingress \
   --version=0.9.5 \
   --set rbac.create=true \
   --set controller.kind=DaemonSet \
-  --set controller.daemonset.useHostPort=true \
+#  --set controller.daemonset.useHostPort=true \
+  --set controller.hostNetwork=true \
   --set controller.nodeSelector.node=edge \
   --set controller.service.type=ClusterIP
 ```
