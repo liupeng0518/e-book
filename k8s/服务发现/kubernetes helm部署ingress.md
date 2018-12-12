@@ -58,19 +58,37 @@ node "lab4" labeled
 ```
 
 如果 label 加错了可以这样删掉:
-
+```bash
 $ kubectl label node lab4 node-
 node "lab4" labeled
-接下来我们覆盖一些默认配置来安装:
+```
 
+我们可以这样查看版本：
+```bash
+[root@lab1 ~]# helm search nginx-ingress
+NAME                            	CHART VERSION	APP VERSION	DESCRIPTION                                                 
+aliyun-stable/nginx-ingress     	0.16.1       	0.12.0-2   	An nginx Ingress controller that uses ConfigMap to store ...
+bitnami/nginx-ingress-controller	3.1.1        	0.21.0     	Chart for the nginx Ingress controller                      
+local/nginx-ingress             	0.9.5        	0.10.2     	An nginx Ingress controller that uses ConfigMap to store ...
+stable/nginx-ingress            	0.9.5        	0.10.2     	An nginx Ingress controller that uses ConfigMap to store ...
+stable/nginx-lego               	0.3.1        	           	Chart for nginx-ingress-controller and kube-lego            
+
+```
+
+接下来我们覆盖一些默认配置来安装，我们选择stable的0.9.5:
+```bash
 helm install stable/nginx-ingress \
   --namespace kube-system \
   --name nginx-ingress \
-  --version=0.23.0 \
+  --version=0.9.5 \
   --set controller.kind=DaemonSet \
   --set controller.daemonset.useHostPort=true \
   --set controller.nodeSelector.node=edge \
   --set controller.service.type=ClusterIP
+```
+这里指定的参数具体可以在[github](https://github.com/helm/charts/tree/master/stable/nginx-ingress)主页查看：
+
+
 可以看下是否成功启动:
 
 $ kubectl get pods -n kube-system | grep nginx-ingress
