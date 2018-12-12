@@ -397,6 +397,30 @@ NAME         STATUS    VOLUME                                     CAPACITY   ACC
 ceph-claim   Bound     pvc-311c99c2-fc55-11e8-8dca-525400d5b8cc   1Gi        ROX            dynamic        38m
 
 ```
+### 5. 创建pod
+```bash
+[root@lab1 ceph-sc]# cat test-pod.yaml 
+apiVersion: v1
+kind: Pod
+metadata:
+  name: static-ceph-pod
+spec:
+  containers:
+  - name: ceph-busybox
+    image: busybox
+    command: ["sleep", "60000"]
+    volumeMounts:
+    - name: ceph-vol1
+      mountPath: /usr/share/busybox
+      readOnly: false
+  volumes:
+  - name: ceph-vol1
+    persistentVolumeClaim:
+      claimName: ceph-claim
+
+
+```
+这里需要注意：k8s node节点上同样需要安装ceph-common，不然会报错。
 
 # 参考
 本文链接：https://www.opsdev.cn/post/Ceph-RBD.html
