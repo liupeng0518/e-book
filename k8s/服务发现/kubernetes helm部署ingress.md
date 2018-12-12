@@ -41,13 +41,16 @@ EXTERNAL-IP 就是我们需要的外部 IP 地址，通过访问它就可以访�
 这种方式实际是使用集群内的某些节点来暴露流量，使用 DeamonSet 部署，保证让符合我们要求的节点都会启动一个 Nginx 的 Ingress Controller 来监听端口，这些节点我们叫它 边缘节点，因为它们才是真正监听端口，让外界流量进入集群内部的节点，这里我使用集群内部的一个节点来暴露流量，它有自己的公网 IP 地址，并且 80 和 443 端口没有被其它占用。
 
 首先，看看集群有哪些节点：
+```bash
+➜  ~ kubectl get node
+NAME   STATUS   ROLES    AGE   VERSION
+lab1   Ready    master   17h   v1.11.5
+lab2   Ready    master   17h   v1.11.5
+lab3   Ready    master   17h   v1.11.5
+lab4   Ready    <none>   17h   v1.11.3
 
-$ kubectl get node
-NAME       STATUS    ROLES     AGE       VERSION
-10.0.0.3   Ready     <none>    56d       v1.8.7-qcloud
-10.0.0.4   Ready     <none>    56d       v1.8.7-qcloud
-10.0.0.5   Ready     <none>    56d       v1.8.7-qcloud
-10.0.0.6   Ready     <none>    56d       v1.8.7-qcloud
+```
+
 我想要 10.0.0.3 这个节点作为 边缘节点 来暴露流量，我来给它加个 label，以便后面我们用 DeamonSet 部署 Nginx Ingress Controller 时能绑到这个节点上，我这里就加个名为 node:edge 的 label :
 
 $ kubectl label node 10.0.0.3 node=edge
