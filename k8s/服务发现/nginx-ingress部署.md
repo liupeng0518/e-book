@@ -10,15 +10,19 @@ Nginx Ingress Controller 是 Kubernetes Ingress Controller 的一种实现，作
 github地址: https://github.com/kubernetes/ingress-nginx/  
 
 # 流量导入方式
-要想暴露内部流量，就需要让 Ingress Controller 自身能够对外提供服务，主要有以下两种方式：
+要想暴露内部流量，就需要让 Ingress Controller 自身能够对外提供服务，主要有以下几种方式：
 
 Ingress Controller 使用 Deployment 部署，Service 类型指定为 LoadBalancer
-优点：最简单
-缺点：需要集群有 Cloud Provider 并且支持 LoadBalancer, 一般云厂商托管的 kubernetes 集群支持，并且使用 LoadBalancer 是付费的，因为他会给你每个 LoadBalancer 类型的 Service 分配公网 IP 地址
+	- 可以通过 Cloud Provider 提供loadbalancer
+	- 可以通过指定external ip 设置vip方式
 
-Ingress Controller 使用 DeamonSet 部署，Pod 指定 hostPort 来暴露端口
-优点：免费
-缺点：没有高可用保证，如果需要高可用就得自己去搞
+Ingress Controller 使用 DeamonSet 部署，Pod 指定 hostnetwork或hostPort 来暴露端口
+	- 没有高可用保证，需要自己实现
+	- 需要占用宿主机端口
+
+Ingress Controller 使用 NodePort方式
+	- 没有高可用保证，需要自己实现
+	- 需要占用宿主机端口
 
 # 使用 LoadBalancer 方式导入流量
 ## 云厂商 Cloud Provider 
@@ -56,6 +60,8 @@ helm install --name nginx-ingress --set "rbac.create=true,controller.service.ext
 
 ```
 这种方式提供了一种，基于 IPVS 的 Bare metal环境下Kubernetes Ingress边缘节点的高可用。
+如果这里不适用的ipvs，那么需要使用keepalived代替 提供vip支持。
+
 这时我们去任意节点查看：
 ```bash
 [root@lab1 ingeress]# ip a sh kube-ipvs0
@@ -189,7 +195,9 @@ my-nginx   my-nginx             80        32m
 
 hostnetwork和hostport，这种方式实际是使用集群内的某些节点来暴露流量，使用 DeamonSet 部署，保证让符合我们要求的节点都会启动一个 Nginx 的 Ingress Controller 来监听端口，这些节点我们叫它 边缘节点，因为它们才是真正监听端口，让外界流量进入集群内部的节点，这里我使用集群内部的一个节点来暴露流量，并且 80 和 443 端口没有被其它占用。
 
-nodeport 则是在集群节点启动监听端口。
+nodeport 则是在所有集群节点启动监听端口。
+
+接下来的实现方式是 hostNetwork  hostPort：
 
 首先，查看集群节点：
 ```bash
@@ -403,4 +411,8 @@ kubectl apply -f provider/baremetal/service-nodeport.yaml
 
 default backend - 404
 
-原文连接：https://imroc.io/posts/kubernetes/use-nginx-ingress-controller-to-expose-service/
+# 参考
+
+https://imroc.io/posts/kubernetes/use-nginx-ingress-controller-to-expose-service/
+
+https://blog.frognew.com/2018/06/kubernetes-ingress-1.html
