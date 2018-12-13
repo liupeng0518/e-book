@@ -21,6 +21,7 @@ Ingress Controller 使用 DeamonSet 部署，Pod 指定 hostPort 来暴露端口
 缺点：没有高可用保证，如果需要高可用就得自己去搞
 
 # 使用 LoadBalancer 方式导入流量
+## 云厂商 Cloud Provider 
 这种方式部署 Nginx Ingress Controller 最简单，只要保证上面说的前提：集群有 Cloud Provider 并且支持 LoadBalancer，如果你是使用云厂商的 Kubernetes 集群，保证你集群所使用的云厂商的账号有足够的余额，执行下面的命令一键安装：
 ```bash
 helm install --name nginx-ingress --namespace kube-system stable/nginx-ingress
@@ -36,6 +37,148 @@ nginx-ingress-controller        LoadBalancer   10.3.255.138   119.28.121.125   8
 ```
 
 EXTERNAL-IP 就是我们需要的外部 IP 地址，通过访问它就可以访问到集群内部的服务了，我们可以将想要的域名配置这个IP的DNS记录，这样就可以直接通过域名来访问了。具体访问哪个 Service, 这个就是我们创建的 Ingress 里面所配置规则的了，可以通过匹配请求的 Host 和 路径这些来转发到不同的后端 Service.
+
+## EXTERNAL-IP
+在我们的环境总，kube-proxy开启了ipvs模式，ingress controller采用externalIp的Service，externalIp指定的就是VIP，vip会由由kube-proxy ipvs接管。
+实验环境：
+```bash
+[root@lab1 ingeress]# kubectl get node -owide 
+NAME      STATUS    ROLES     AGE       VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                KERNEL-VERSION               CONTAINER-RUNTIME
+lab1      Ready     master    1d        v1.11.5   10.7.12.201   <none>        CentOS Linux 7 (Core)   3.10.0-862.11.6.el7.x86_64   docker://17.3.2
+lab2      Ready     master    1d        v1.11.5   10.7.12.202   <none>        CentOS Linux 7 (Core)   3.10.0-862.11.6.el7.x86_64   docker://17.3.2
+lab3      Ready     master    1d        v1.11.5   10.7.12.203   <none>        CentOS Linux 7 (Core)   3.10.0-862.11.6.el7.x86_64   docker://17.3.2
+lab4      Ready     <none>    1d        v1.11.5   10.7.12.204   <none>        CentOS Linux 7 (Core)   3.10.0-862.11.6.el7.x86_64   docker://17.3.2
+[root@lab1 ingeress]# 
+```
+此时我们部署:
+```bash
+helm install --name nginx-ingress --set "rbac.create=true,controller.service.externalIPs[0]=10.7.12.210" stable/nginx-ingress
+
+```
+这种方式提供了一种，基于 IPVS 的 Bare metal环境下Kubernetes Ingress边缘节点的高可用。
+这时我们去任意节点查看：
+```bash
+[root@lab1 ingeress]# ip a sh kube-ipvs0
+7: kube-ipvs0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default 
+    link/ether 9a:e7:21:a4:e5:ab brd ff:ff:ff:ff:ff:ff
+    inet 10.96.0.1/32 brd 10.96.0.1 scope global kube-ipvs0
+       valid_lft forever preferred_lft forever
+    inet 10.96.0.10/32 brd 10.96.0.10 scope global kube-ipvs0
+       valid_lft forever preferred_lft forever
+    inet 10.98.162.41/32 brd 10.98.162.41 scope global kube-ipvs0
+       valid_lft forever preferred_lft forever
+    inet 10.104.239.107/32 brd 10.104.239.107 scope global kube-ipvs0
+       valid_lft forever preferred_lft forever
+    inet 10.103.35.242/32 brd 10.103.35.242 scope global kube-ipvs0
+       valid_lft forever preferred_lft forever
+    inet 10.104.65.25/32 brd 10.104.65.25 scope global kube-ipvs0
+       valid_lft forever preferred_lft forever
+    inet 10.99.227.84/32 brd 10.99.227.84 scope global kube-ipvs0
+       valid_lft forever preferred_lft forever
+    inet 10.7.12.210/32 brd 10.7.12.210 scope global kube-ipvs0
+       valid_lft forever preferred_lft forever
+    inet 10.104.157.87/32 brd 10.104.157.87 scope global kube-ipvs0
+       valid_lft forever preferred_lft forever
+```
+可以看到 10,7.12.210这个ip绑定到了 kube-ipvs0 上了
+
+
+这时我们访问：
+
+```
+[root@lab1 deploy]# curl http://10.7.12.210
+default backend - 404
+
+[root@lab1 deploy]# curl -k  https://10.7.12.210
+default backend - 404
+
+```
+
+创建测试
+```bash
+[root@lab1 ingeress]# cat my-nginx.yaml 
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: my-nginx
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: my-nginx
+    spec:
+      containers:
+      - name: my-nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-nginx
+  labels:
+    app: my-nginx
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    name: http
+  selector:
+    run: my-nginx
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: my-nginx
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: my-nginx
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: my-nginx
+          servicePort: 80
+
+
+```
+访问：
+```bash
+[root@lab1 ingeress]# curl my-nginx
+...
+<title>Welcome to nginx!</title>
+...
+
+```
+
+
+查看相关信息
+```bash
+[root@lab1 ingeress]# kubectl get svc
+kub	NAME                            TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+kubernetes                      ClusterIP      10.96.0.1       <none>        443/TCP                      1d
+my-nginx                        ClusterIP      10.104.65.25    <none>        80/TCP                       31m
+nginx-ingress-controller        LoadBalancer   10.99.227.84    10.7.12.210   80:31970/TCP,443:30512/TCP   1m
+nginx-ingress-default-backend   ClusterIP      10.104.157.87   <none>        80/TCP                       1m
+nobby-scorpion-mariadb          ClusterIP      10.103.35.242   <none>        3306/TCP                     18h
+[root@lab1 ingeress]# kubectl get pod
+NAME                                             READY     STATUS    RESTARTS   AGE
+my-nginx-59497d7745-f785f                        1/1       Running   0          32m
+nginx-ingress-controller-58bff448cb-6hf9s        1/1       Running   1          1m
+nginx-ingress-default-backend-7744786499-wnhsh   1/1       Running   0          1m
+nobby-scorpion-mariadb-756d49cfb8-z7jtb          1/1       Running   0          18h
+static-ceph-pod                                  1/1       Running   1          19h
+[root@lab1 ingeress]# kubectl get ing
+NAME       HOSTS      ADDRESS   PORTS     AGE
+my-nginx   my-nginx             80        32m
+
+```
+
+
 
 # 使用 Bare Metal 方式导入流量
 在使用 Bare Metal 的时候可以有几种方式：
@@ -121,7 +264,14 @@ $ kubectl describe -n kube-system po/nginx-ingress-controller-9nxsw
 [root@lab4 ~]# ss -antlp|grep '80\|443'
 LISTEN     0      128          *:443                      *:*                   users:(("nginx",pid=28179,fd=15),("nginx",pid=28175,fd=15),("nginx",pid=27967,fd=15))
 LISTEN     0      128          *:18080                    *:*                   users:(("nginx",pid=28179,fd=17),("nginx",pid=28175,fd=17),("nginx",pid=27967,fd=17))
-LISTEN     0      128          *:80                       *:*                   users:(("nginx",pid=28179,fd=13),("nginx",pid=28175,fd=13),("nginx",pid=27967,fd=13))
+LISTEN     0      128          *:80                       *:*                ```
+[root@lab1 deploy]# curl http://10.7.12.204
+default backend - 404
+
+[root@lab1 deploy]# curl -k  https://10.7.12.204
+default backend - 404
+
+```   users:(("nginx",pid=28179,fd=13),("nginx",pid=28175,fd=13),("nginx",pid=27967,fd=13))
 LISTEN     0      128         :::443                     :::*                   users:(("nginx",pid=28179,fd=16),("nginx",pid=28175,fd=16),("nginx",pid=27967,fd=16))
 LISTEN     0      128         :::18080                   :::*                   users:(("nginx",pid=28179,fd=18),("nginx",pid=28175,fd=18),("nginx",pid=27967,fd=18))
 LISTEN     0      128         :::80                      :::*                   users:(("nginx",pid=28179,fd=14),("nginx",pid=28175,fd=14),("nginx",pid=27967,fd=14))
