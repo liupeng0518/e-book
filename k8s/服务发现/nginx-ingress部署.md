@@ -44,7 +44,9 @@ EXTERNAL-IP 就是我们需要的外部 IP 地址，通过访问它就可以访�
  - hostPort
  - nodePort
 
-这种方式实际是使用集群内的某些节点来暴露流量，使用 DeamonSet 部署，保证让符合我们要求的节点都会启动一个 Nginx 的 Ingress Controller 来监听端口，这些节点我们叫它 边缘节点，因为它们才是真正监听端口，让外界流量进入集群内部的节点，这里我使用集群内部的一个节点来暴露流量，并且 80 和 443 端口没有被其它占用。
+hostnetwork和hostport，这种方式实际是使用集群内的某些节点来暴露流量，使用 DeamonSet 部署，保证让符合我们要求的节点都会启动一个 Nginx 的 Ingress Controller 来监听端口，这些节点我们叫它 边缘节点，因为它们才是真正监听端口，让外界流量进入集群内部的节点，这里我使用集群内部的一个节点来暴露流量，并且 80 和 443 端口没有被其它占用。
+
+nodeport 则是在集群节点启动监听端口。
 
 首先，查看集群节点：
 ```bash
@@ -222,7 +224,9 @@ my-nginx   my-nginx             80        36s
 
 注意：定义 Ingress 的时候最好加上 kubernetes.io/ingress.class 这个 annotation，在有多个 Ingress Controller 的情况下让请求能够被我们安装的这个处理（云厂商托管的 Kubernetes 集群一般会有默认的 Ingress Controller)
 
-# 官方yaml文件部署
+下面是第二种方式部署：
+
+# 官方yaml文件方式部署
 
 github地址: https://github.com/kubernetes/ingress-nginx/  
 
