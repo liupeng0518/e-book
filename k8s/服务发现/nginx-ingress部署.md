@@ -37,8 +37,8 @@ nginx-ingress-controller        LoadBalancer   10.3.255.138   119.28.121.125   8
 
 EXTERNAL-IP 就是我们需要的外部 IP 地址，通过访问它就可以访问到集群内部的服务了，我们可以将想要的域名配置这个IP的DNS记录，这样就可以直接通过域名来访问了。具体访问哪个 Service, 这个就是我们创建的 Ingress 里面所配置规则的了，可以通过匹配请求的 Host 和 路径这些来转发到不同的后端 Service.
 
-# 使用 DaemonSet + hostNetwork(或hostPort或nodePort) 导入流量
-在使用daemonset的时候可以有几种方式：
+# 使用 Bare Metal 方式导入流量
+在使用 Bare Metal 的时候可以有几种方式：
 
  - hostNetwork 
  - hostPort
