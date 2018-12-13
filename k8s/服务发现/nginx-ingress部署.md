@@ -83,6 +83,8 @@ stable/nginx-lego               	0.3.1        	           	Chart for nginx-ingre
 
 ```
 
+注意： 目前有的k8s版本使用hostport不生效，这里我是使用的hostnetwork方式。
+
 接下来我们覆盖一些默认配置来安装，我们选择stable的0.9.5，注意这里集群开启了rbac，所以这里也要开启rbac支持，否则会导致controller无法启动。
 同时我们这里选择了hostNetwork的方式：
 ```bash
