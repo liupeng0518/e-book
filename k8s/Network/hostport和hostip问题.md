@@ -5,6 +5,20 @@
 Client Version: version.Info{Major:"1", Minor:"11", GitVersion:"v1.11.5", GitCommit:"753b2dbc622f5cc417845f0ff8a77f539a4213ea", GitTreeState:"clean", BuildDate:"2018-11-26T14:41:50Z", GoVersion:"go1.10.3", Compiler:"gc", Platform:"linux/amd64"}
 Server Version: version.Info{Major:"1", Minor:"11", GitVersion:"v1.11.5", GitCommit:"753b2dbc622f5cc417845f0ff8a77f539a4213ea", GitTreeState:"clean", BuildDate:"2018-11-26T14:31:35Z", GoVersion:"go1.10.3", Compiler:"gc", Platform:"linux/amd64"}
 ```
+系统和内核版本：
+```bash
+[root@lab1 ~]# uname -a
+Linux lab1 3.10.0-862.11.6.el7.x86_64 #1 SMP Tue Aug 14 21:49:04 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux
+[root@lab1 ~]# cat /etc/redhat-release 
+CentOS Linux release 7.5.1804 (Core) 
+```
+ipvs版本：
+```bash
+[root@lab1 ~]# ipvsadm --help
+ipvsadm v1.27 2008/5/15 (compiled with popt and IPVS v1.2.1)
+
+```
+
 在现在环境中使用hostport会出现异常：
 我们创建一个pod：
 ```bash
@@ -66,3 +80,11 @@ Connection closed by foreign host.
 https://github.com/coreos/flannel/issues/1019
 
 https://github.com/kubernetes/kubernetes/issues/65976
+
+第二个issue中提到：
+
+The pr fix the bug,when contruct checkpoint in kubelet.Kubelet dont save the hostip.
+Then if We want to use hostip and hostport in yaml to create pod,The Kubelet just send "0.0.0.0" to cni plugin .
+
+pr：
+https://github.com/kubernetes/kubernetes/pull/66228
