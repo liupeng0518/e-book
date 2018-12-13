@@ -88,6 +88,13 @@ helm install --name nginx-ingress --set "rbac.create=true,controller.service.ext
 ```
 可以看到 10,7.12.210这个ip绑定到了 kube-ipvs0 上了
 
+在几台节点宿主机上查看，我们可以看到 ExternalIP 的 Service 是通过 Kube-Proxy对外暴露的，这里的 10.7.12.210是内网 IP。 实际生产应用中是需要通过边缘路由器或全局统一接入层的负载均衡器将到达公网 IP 的外网流量转发到这个内网 IP 上，外部用户再通过域名访问集群中以 Ingress 暴露的所有服务。
+
+```
+[root@lab1 ingeress]# sudo netstat -tlunp|grep kube-proxy|grep -E '80|443'
+tcp        0      0 10.7.12.210:443         0.0.0.0:*               LISTEN      3127/kube-proxy     
+tcp        0      0 10.7.12.210:80          0.0.0.0:*               LISTEN      3127/kube-proxy 
+```
 
 这时我们访问：
 
@@ -97,6 +104,25 @@ default backend - 404
 
 [root@lab1 deploy]# curl -k  https://10.7.12.210
 default backend - 404
+
+[root@lab1 ingeress]# curl -I http://10.7.12.210/healthz/
+HTTP/1.1 200 OK
+Server: nginx/1.13.8
+Date: Thu, 13 Dec 2018 04:44:47 GMT
+Content-Type: text/html
+Content-Length: 0
+Connection: keep-alive
+Strict-Transport-Security: max-age=15724800; includeSubDomains;
+
+[root@lab1 ingeress]# curl -I --insecure http://10.7.12.210/healthz/
+HTTP/1.1 200 OK
+Server: nginx/1.13.8
+Date: Thu, 13 Dec 2018 04:45:00 GMT
+Content-Type: text/html
+Content-Length: 0
+Connection: keep-alive
+Strict-Transport-Security: max-age=15724800; includeSubDomains;
+
 
 ```
 
