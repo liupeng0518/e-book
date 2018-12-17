@@ -10,7 +10,7 @@ Nginx Ingress Controller 是 Kubernetes Ingress Controller 的一种实现，作
 github地址: https://github.com/kubernetes/ingress-nginx/  
 
 # 流量导入方式
-要想暴露内部流量，就需要让 Ingress Controller 自身能够对外提供服务，主要有以下几种方式：
+要想暴露内部流量，就需要让 Ingress Controller 自身能够对外提供服务，我们可以选择一下方式：
 
 Ingress Controller 使用 Deployment 部署，Service 类型指定为 LoadBalancer
 	- 可以通过 Cloud Provider 提供loadbalancer
@@ -24,7 +24,7 @@ Ingress Controller 使用 NodePort方式
 	- 没有高可用保证，需要自己实现
 	- 需要占用宿主机端口
 
-# 使用 LoadBalancer 方式导入流量
+# LoadBalancer 方式导入流量
 ## 云厂商 Cloud Provider 
 这种方式部署 Nginx Ingress Controller 最简单，只要保证上面说的前提：集群有 Cloud Provider 并且支持 LoadBalancer，如果你是使用云厂商的 Kubernetes 集群，保证你集群所使用的云厂商的账号有足够的余额，执行下面的命令一键安装：
 ```bash
@@ -42,8 +42,20 @@ nginx-ingress-controller        LoadBalancer   10.3.255.138   119.28.121.125   8
 
 EXTERNAL-IP 就是我们需要的外部 IP 地址，通过访问它就可以访问到集群内部的服务了，我们可以将想要的域名配置这个IP的DNS记录，这样就可以直接通过域名来访问了。具体访问哪个 Service, 这个就是我们创建的 Ingress 里面所配置规则的了，可以通过匹配请求的 Host 和 路径这些来转发到不同的后端 Service.
 
+
+
+
+
+# Bare Metal 环境下流量导入
+在使用 Bare Metal 的时候可以有几种方式：
+
+ - hostNetwork 
+ - hostPort
+ - nodePort
+ - externalIP
+
 ## EXTERNAL-IP
-在我们的环境总，kube-proxy开启了ipvs模式，ingress controller采用externalIp的Service，externalIp指定的就是VIP，vip会由由kube-proxy ipvs接管。
+在我们的环境中，kube-proxy开启了ipvs模式，ingress controller采用externalIp的Service，externalIp指定的就是VIP，vip会由由kube-proxy ipvs接管。
 实验环境：
 ```bash
 [root@lab1 ingeress]# kubectl get node -owide 
@@ -212,19 +224,14 @@ my-nginx   my-nginx             80        32m
 
 
 
-# 使用 Bare Metal 方式导入流量
-在使用 Bare Metal 的时候可以有几种方式：
 
- - hostNetwork 
- - hostPort
- - nodePort
-
-hostnetwork和hostport，这种方式实际是使用集群内的某些节点来暴露流量，使用 DeamonSet 部署，保证让符合我们要求的节点都会启动一个 Nginx 的 Ingress Controller 来监听端口，这些节点我们叫它 边缘节点，因为它们才是真正监听端口，让外界流量进入集群内部的节点，这里我使用集群内部的一个节点来暴露流量，并且 80 和 443 端口没有被其它占用。
+## hostnetwork/hostport/nodeport
+这种方式实际是使用集群内的某些节点来暴露流量，使用 DeamonSet 部署，保证让符合我们要求的节点都会启动一个 Nginx 的 Ingress Controller 来监听端口，这些节点我们叫它 边缘节点，因为它们才是真正监听端口，让外界流量进入集群内部的节点，这里我使用集群内部的一个节点来暴露流量，并且 80 和 443 端口没有被其它占用。
 
 nodeport 则是在所有集群节点启动监听端口。
 
-接下来的实现方式是 hostNetwork  hostPort：
-
+接下来的实现方式是 hostNetwork：
+### 挑选边缘节点
 首先，查看集群节点：
 ```bash
 ➜  ~ kubectl get node
@@ -247,7 +254,7 @@ node "lab4" labeled
 $ kubectl label node lab4 node-
 node "lab4" labeled
 ```
-
+### 部署ingress
 我们可以这样查看版本：
 ```bash
 [root@lab1 ~]# helm search nginx-ingress
@@ -330,7 +337,7 @@ default backend - 404
 
 运行成功我们就可以创建 Ingress 来将外部流量导入集群内部啦，外部 IP 是我们的 边缘节点 的 IP，公网和内网 IP 都算，我用的 lab4 这个节点，并且它有公网 IP，我就可以通过公网 IP 来访问了，如果再给这个公网 IP 添加 DNS 记录，我就可以用域名访问了。
 
-测试
+### 测试
 我们来创建一个服务测试一下，先创建一个 my-nginx.yaml
 ```bash
 vi my-nginx.yaml
@@ -410,7 +417,7 @@ my-nginx   my-nginx             80        36s
 
 注意：定义 Ingress 的时候最好加上 kubernetes.io/ingress.class 这个 annotation，在有多个 Ingress Controller 的情况下让请求能够被我们安装的这个处理（云厂商托管的 Kubernetes 集群一般会有默认的 Ingress Controller)
 
-下面是第二种方式部署：
+下面是官方yaml方式部署：
 
 # 官方yaml文件方式部署
 
