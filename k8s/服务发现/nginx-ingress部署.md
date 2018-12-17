@@ -40,7 +40,7 @@ helm install --name nginx-ingress --namespace kube-system stable/nginx-ingress
 ```bash
 $ kubectl get svc -n kube-system
 NAME                            TYPE           CLUSTER-IP     EXTERNAL-IP      PORT(S)                      AGE
-nginx-ingress-controller        LoadBalancer   10.3.255.138   119.28.121.125   80:30113/TCP,443:32564/TCP   21h
+nginx-ingress-controller        LoadBalancer   10.3.255.123   120.27.122.135   80:30113/TCP,443:32564/TCP   1h
 ```
 
 EXTERNAL-IP 就是我们需要的外部 IP 地址，通过访问它就可以访问到集群内部的服务了，我们可以将想要的域名配置这个IP的DNS记录，这样就可以直接通过域名来访问了。具体访问哪个 Service, 这个就是我们创建的 Ingress 里面所配置规则的了，可以通过匹配请求的 Host 和 路径这些来转发到不同的后端 Service.
@@ -58,7 +58,9 @@ EXTERNAL-IP 就是我们需要的外部 IP 地址，通过访问它就可以访�
 	 - externalIP
 
 ## EXTERNAL-IP
-在我们的环境中，kube-proxy开启了ipvs模式，ingress controller采用externalIp的Service，externalIp指定的就是VIP，vip会由由kube-proxy ipvs接管。
+
+### kube-proxy ipvs
+在我们的环境中，kube-proxy开启了ipvs模式，ingress controller采用externalIp的Service，externalIp指定的就是VIP，vip会由kube-proxy ipvs接管。
 实验环境：
 ```bash
 [root@lab1 ingeress]# kubectl get node -owide 
@@ -225,10 +227,19 @@ my-nginx   my-nginx             80        32m
 
 ```
 
+### kube-proxy iptables
+这种方式需要外部提供vip高可用
+
+这里我们指定controller.service.externalIPs[0]为vip地址，如下方式部署：
+```bash
+helm install --name nginx-ingress --set "rbac.create=true,controller.service.externalIPs[0]=10.7.12.210,controller.service.externalIPs[1]=10.7.12.201,controller.service.externalIPs[2]=10.7.12.202" stable/nginx-ingress
+
+```
+部署之后，我们这里只是指定了vip地址，但是环境中并未真实提供vip地址，
+那么之后可以通过keepalived方式提供vip。
 
 
-
-## hostnetwork/hostport/nodeport
+## hostnetwork/hostport
 这种方式实际是使用集群内的某些节点来暴露流量，使用 DeamonSet 部署，保证让符合我们要求的节点都会启动一个 Nginx 的 Ingress Controller 来监听端口，这些节点我们叫它 边缘节点，因为它们才是真正监听端口，让外界流量进入集群内部的节点，这里我使用集群内部的一个节点来暴露流量，并且 80 和 443 端口没有被其它占用。
 
 nodeport 则是在所有集群节点启动监听端口。
@@ -339,6 +350,8 @@ default backend - 404
 ```
 
 运行成功我们就可以创建 Ingress 来将外部流量导入集群内部啦，外部 IP 是我们的 边缘节点 的 IP，公网和内网 IP 都算，我用的 lab4 这个节点，并且它有公网 IP，我就可以通过公网 IP 来访问了，如果再给这个公网 IP 添加 DNS 记录，我就可以用域名访问了。
+### 高可用
+此时部署成功之后，这里同样需要通过keepalived或外部LB提供高可用
 
 ### 测试
 我们来创建一个服务测试一下，先创建一个 my-nginx.yaml
@@ -420,9 +433,9 @@ my-nginx   my-nginx             80        36s
 
 注意：定义 Ingress 的时候最好加上 kubernetes.io/ingress.class 这个 annotation，在有多个 Ingress Controller 的情况下让请求能够被我们安装的这个处理（云厂商托管的 Kubernetes 集群一般会有默认的 Ingress Controller)
 
-下面是官方yaml方式部署：
 
-# 官方yaml文件方式部署
+## nodeport
+这里我们使用官方yaml文件方式部署
 
 github地址: https://github.com/kubernetes/ingress-nginx/  
 
