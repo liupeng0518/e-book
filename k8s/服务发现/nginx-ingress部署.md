@@ -13,14 +13,17 @@ github地址: https://github.com/kubernetes/ingress-nginx/
 要想暴露内部流量，就需要让 Ingress Controller 自身能够对外提供服务，我们可以选择一下方式：
 
 Ingress Controller 使用 Deployment 部署，Service 类型指定为 LoadBalancer
+
 	- 可以通过 Cloud Provider 提供loadbalancer
 	- 可以通过指定external ip 设置vip方式
 
 Ingress Controller 使用 DeamonSet 部署，Pod 指定 hostnetwork或hostPort 来暴露端口
+
 	- 没有高可用保证，需要自己实现
 	- 需要占用宿主机端口
 
 Ingress Controller 使用 NodePort方式
+
 	- 没有高可用保证，需要自己实现
 	- 需要占用宿主机端口
 
@@ -49,10 +52,10 @@ EXTERNAL-IP 就是我们需要的外部 IP 地址，通过访问它就可以访�
 # Bare Metal 环境下流量导入
 在使用 Bare Metal 的时候可以有几种方式：
 
- - hostNetwork 
- - hostPort
- - nodePort
- - externalIP
+	 - hostNetwork 
+	 - hostPort
+	 - nodePort
+	 - externalIP
 
 ## EXTERNAL-IP
 在我们的环境中，kube-proxy开启了ipvs模式，ingress controller采用externalIp的Service，externalIp指定的就是VIP，vip会由由kube-proxy ipvs接管。
