@@ -220,13 +220,8 @@ ansible-playbook -i hosts site.yml
 #### 清空集群
 
 ```
-cp infrastructure-playbooks/purge-cluster.yml purge-cluster.yml # 必须copy到项目根目录下
+cp infrastructure-playbooks/purge-cluster.yml purge-cluster.yml 
 ansible-playbook -i hosts purge-cluster.yml
 
 ```
 
-> 
-> 
-> ceph-ansible极大的提升工作效率，并且很好的减少人为的手工操作失误，解放劳动力的利器！
-> 
->
