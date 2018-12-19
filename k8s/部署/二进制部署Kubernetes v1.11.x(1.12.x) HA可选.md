@@ -1,9 +1,9 @@
 ---
-title: 二进制部署Kubernetes v1.11.x(1.12.x) HA可选
+title: [转]二进制部署Kubernetes v1.11.x(1.12.x) HA可选
 tags: k8s,部署
 grammar_cjkRuby: true
 ---
-
+原文：https://zhangguanzhang.github.io/2018/09/18/kubernetes-1-11-x-bin/#Ingress-Controller
 
 本次采用二进制文件方式部署
 
