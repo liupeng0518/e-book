@@ -3,8 +3,8 @@ title: [转]二进制部署Kubernetes v1.11.x(1.12.x) HA可选
 tags: k8s,部署
 grammar_cjkRuby: true
 ---
-原文：https://zhangguanzhang.github.io/2018/09/18/kubernetes-1-11-x-bin/#Ingress-Controller
 
+```
 本次采用二进制文件方式部署
 
 不建议使用secureCRT这个ssh软件复制本篇博客内容的命令,因为它的部分版本对包含多条命令的处理结果并不完美,可能很多命令不是预期结果
@@ -19,31 +19,27 @@ grammar_cjkRuby: true
 
 本次安裝的版本：
 
-	Kubernetes v1.11.3
-	CNI v0.7.1
-	Etcd v3.3.9
-	Flannel v0.10.0 或者 Calico v3.1.3
-	Docker CE latest version(18.06)
-	
+Kubernetes v1.11.3
+CNI v0.7.1
+Etcd v3.3.9
+Flannel v0.10.0 或者 Calico v3.1.3
+Docker CE latest version(18.06)
 2018-10-08 已测试v1.12.1本文流程可行
 2018-11-29 已测试v1.12.3本文流程可行
 
-不建议用docker 18.05 , docker CE 18.05有[bind mount的bug](https://github.com/moby/moby/issues/37032)
+不建议用docker 18.05 , docker CE 18.05有bind mount的bug
 
 本次部署的网络信息：
 
-	Cluster IP CIDR: 10.244.0.0/16
-	Service Cluster IP CIDR: 10.96.0.0/12
-	Service DNS IP: 10.96.0.10
-	DNS DN: cluster.local
-	Kubernetes API VIP: 10.7.12.200
-	Kubernetes Ingress VIP: 10.7.12.210
-	
-	如果单台master的话Kubernetes API VIP写master的ip即可,单台就别搞啥HA了
-	单台master的话所有复制到其他master的操作都忽略即可
+Cluster IP CIDR: 10.244.0.0/16
+Service Cluster IP CIDR: 10.96.0.0/12
+Service DNS IP: 10.96.0.10
+DNS DN: cluster.local
+Kubernetes API VIP: 10.7.12.200
+Kubernetes Ingress VIP: 10.7.12.210
+如果单台master的话Kubernetes API VIP写master的ip即可,单台就别搞啥HA了
+单台master的话所有复制到其他master的操作都忽略即可
 
-
-![k8s ha](https://github.com/liupeng0518/e-book/blob/master/k8s/.images/kubernetes-aa-ha.png)
 
 节点信息
 本教学将以下列节点数与规格来进行部署Kubernetes集群,系统可采用Ubuntu 16.x与CentOS 7.4+
@@ -102,7 +98,7 @@ rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
 rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
 查看可用的内核
 
-1
+
 yum --disablerepo="*" --enablerepo="elrepo-kernel" list available  --showduplicates
 在yum的ELRepo源中,mainline 为最新版本的内核,安装kernel
 ipvs依赖于nf_conntrack_ipv4内核模块,4.19包括之后内核里改名为nf_conntrack,但是kube-proxy的代码里没有加判断一直用的nf_conntrack_ipv4,所以这里我安装4.19版本以下的内核
@@ -247,8 +243,6 @@ hostnamectl set-hostname k8s-m1
 所有机器需要自行设定ntp。
 
 此时可以关机做个快照
-
-
 
 
 
@@ -2784,7 +2778,8 @@ controller-manager   Healthy     ok
 etcd-1               Healthy     {"health": "true"}
 etcd-2               Healthy     {"health": "true"}
 etcd-0               Unhealthy   Get https://10.7.12.201:2379/health: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
-原文作者：Zhangguanzhang
+
+```
 
 原文链接：http://zhangguanzhang.github.io/2018/09/18/kubernetes-1-11-x-bin/
 
