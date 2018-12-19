@@ -41,7 +41,8 @@ grammar_cjkRuby: true
 	
 	如果单台master的话Kubernetes API VIP写master的ip即可,单台就别搞啥HA了
 	单台master的话所有复制到其他master的操作都忽略即可
-![k8s ha](../.images/kubernetes-aa-ha.png)
+
+[k8s ha](https://github.com/liupeng0518/e-book/blob/master/k8s/.images/kubernetes-aa-ha.png)
 
 节点信息
 本教学将以下列节点数与规格来进行部署Kubernetes集群,系统可采用Ubuntu 16.x与CentOS 7.4+
