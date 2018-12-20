@@ -28,3 +28,5 @@ systemctl restart ceph-mgr@
 ```
 
 参考：https://blog.widodh.nl/2017/06/using-the-new-dashboard-in-ceph-mgr/
+
+# 
