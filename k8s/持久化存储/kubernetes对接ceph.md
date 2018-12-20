@@ -94,7 +94,15 @@ spec:
 ```
 #  kubectl create -f task-claim.yaml
 persistentvolumeclaim "ceph-claim" created
-
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ceph-kube-secret
+  namespace: default
+data:
+  key: QVFCbEV4OVpmaGJtQ0JBQW55d2Z0NHZtcS96cE42SW1JVUQvekE9PQ== 
+type:
+  kubernetes.io/rbd
 ```
 
 ```
@@ -161,6 +169,7 @@ ceph-pod                           1/1       Running   0          20s       10.1
 与静态创建的ceph-secret是同一个，这里就不在重复创建。
 
 ### 创建kube用户的ceph secret
+如果没穿件ceph admin的secret的话 需要同时创建ceph admin secret（步骤相同）
 
 在ceph monitors节点运行命令`ceph auth get-key client.kube`获取kube用户的key。并对该用户key进行base64用于下面的文件。
 
@@ -197,25 +206,31 @@ ceph-kube-secret   kubernetes.io/rbd   1         2m
 
 在创建StorageClass资源前,先介绍下StorageClass的概念:`StorageClass` 为管理员提供了描述存储`class`的方法。 不同的 `class` 可能会映射到不同的服务质量等级或备份策略，或由群集管理员确定的任意策略。 Kubernetes 本身不清楚各种 `class` 代表的什么。这个概念在其他存储系统中有时被称为“配置文件”。StorageClass不仅仅使用与ceph RBD还可以用于`Cinder`,`NFS`,`Glusterfs`等等。
 
+参考： https://kubernetes.io/docs/concepts/storage/storage-classes/
+
 好了，下面我们来创一个动态的storage class。定义文件如下：
 
 ```
 kind: StorageClass
+apiVersion: storage.k8s.io/v1
 metadata:
-  name: dynamic
+  name: rbd
   annotations:
      storageclass.beta.kubernetes.io/is-default-class: "true"
 provisioner: kubernetes.io/rbd
 parameters:
-  monitors: 10.139.206.209:6789
+  monitors: 10.7.12.201:6789,10.7.12.202:6789,10.7.12.203:6789
   adminId: admin
   adminSecretName: ceph-secret
   adminSecretNamespace: kube-system
   pool: kube
   userId: kube
   userSecretName: ceph-kube-secret
+  userSecretNamespace: default
   fsType: ext4
-  imageFormat: "1"
+  imageFormat: "2"
+  imageFeatures: "layering"
+
 
 ```
 
@@ -223,7 +238,7 @@ parameters:
 
 ```
 # kubectl create -f rbd-storage-class.yaml 
-storageclass "dynamic" created
+storageclass "rbd" created
 
 ```
 
@@ -232,7 +247,7 @@ storageclass "dynamic" created
 ```
 # kubectl get storageclass
 NAME                PROVISIONER         AGE
-dynamic (default)   kubernetes.io/rbd   54s
+rbd (default)   kubernetes.io/rbd   54s
 
 ```
 
@@ -267,11 +282,11 @@ persistentvolumeclaim "ceph-claim" created
 ```
 # kubectl get pvc
 NAME              STATUS    VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-ceph-claim        Bound     pvc-c32aca7e-38cd-11e8-af69-f0921c10a7bc   1Gi        ROX            dynamic        6s
+ceph-claim        Bound     pvc-c32aca7e-38cd-11e8-af69-f0921c10a7bc   1Gi        ROX            rbd        6s
 
 ```
 
-我们看到`ceph-claim`这个PVC已经绑定到了`pvc-c32aca7e-38cd-11e8-af69-f0921c10a7bc`这个PV,而该PV是由名为`dynamic`的storageclass动态创建的。
+我们看到`ceph-claim`这个PVC已经绑定到了`pvc-c32aca7e-38cd-11e8-af69-f0921c10a7bc`这个PV,而该PV是由名为`rbd`的storageclass动态创建的。
 
 ### 创建Pod
 
@@ -308,8 +323,9 @@ static-ceph-pod   1/1       Running   0          40s
 ```
 
 现在，我们已经成功的将该PVC挂载到了Pod中的容器中。
+如果集群是二进制部署的话，至此可以完成对接工作，如果你的集群使用kubeadm部署的，那么你需要将ceph-comman的包封装到kube-controller-manager  的images里，因为此image没有包含ceph client。如果不封装，那么需要借助第三方组件，如下。
 
-# 对接问题
+# kubeadm 对接问题
 
 随着 k8s 1.13 发布， kubeadm 项目逐步进入GA，目前来看 kubeadm 极大简化了k8s部署，趋势已定。  
 k8s 可选持久化数据存储的方案比较多，像nfs ceph glusterfs等  
@@ -318,7 +334,8 @@ k8s 可选持久化数据存储的方案比较多，像nfs ceph glusterfs等
 ```bash  
 Failed to provision volume with StorageClass "": failed to create rbd image: executable file not found in $PATH, command output:
 ```
-根据这个 [issue] (https://github.com/kubernetes/kubernetes/issues/38923) 的描述，出错的原因是 kube-controller-manager 容器中不包含 rbd 程序导致 RBD 卷无法正常创建。
+根据这个 [issue] (https://github.com/kubernetes/kubernetes/issues/38923) 的描述，出错的原因是 kube-controller-manager  的images里，因为此image没有包含ceph client。如果不封装，那么需要借助第三方组件，如下。
+容器中不包含 rbd 程序导致 RBD 卷无法正常创建。
 
 目前可以使用kubernetes-incubator/external-storage里的第三方 RBD Provisioner ，[github仓库地址](https://github.com/kubernetes-incubator/external-storage/tree/master/ceph/rbd/deploy)
 
