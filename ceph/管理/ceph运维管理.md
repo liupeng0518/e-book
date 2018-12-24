@@ -1,9 +1,3 @@
----
-title: ceph运维管理
-tags: ceph
-grammar_cjkRuby: true
----
-
 # 开启监控模块
 在配置文件/etc/ceph/ceph.conf中添加
 ```

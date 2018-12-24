@@ -1,9 +1,3 @@
----
-title: [转] ceph pool 管理
-tags: ceph,luminous
-grammar_cjkRuby: true
----
-
 # 目标
 ceph 下利用命令行对池管理
 
