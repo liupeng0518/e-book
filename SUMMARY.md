@@ -29,7 +29,7 @@
   * [ceph运维管理](ceph/管理/ceph运维管理.md)  
 
 
-## OpenStack
+<!-- ## OpenStack -->
 
 
 ## DevOps
