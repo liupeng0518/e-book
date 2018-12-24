@@ -17,7 +17,7 @@
   * [Kubernetes API 资源应该使用哪个 Group 和 Version](k8s/声明式API/Kubernetes_API资源的Group和Version选择.md)
 
 ## OKD
-* [集群配置](okd/README.md)
+* [集群配置](okd/configing_clusters/README.md)
   * [openshift开启监控](okd/configing_clusters/openshift开启监控.md)
 
 ## ceph
