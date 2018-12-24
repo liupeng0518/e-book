@@ -4,7 +4,7 @@
 
 * [部署](k8s/部署/README.md)
   * [kubeadm 部署1.11.x HA集群](k8s/部署/kubeadm部署1.11.x_HA集群.md)
-  * [kubeadm 部署1.11.x HA集群](k8s/部署/二进制部署Kubernetes v1.11.x(1.12.x) HA可选.md)
+  * [二进制部署Kubernetes v1.11.x/v1.12.x HA](k8s/部署/二进制部署Kubernetes.md)
 * [网络](k8s/Network/README.md)
   * [异常排错](k8s/Network/异常排错.md)
   * [集群外部访问Kubernetes中的Pods](k8s/Network/集群外部访问Kubernetes中的Pods.md)
