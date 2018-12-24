@@ -1,7 +1,6 @@
 # Summary
 
-## KUBERNETES  
-
+## kubernets
 * [部署](k8s/部署/README.md)
   * [kubeadm 部署1.11.x HA集群](k8s/部署/kubeadm部署1.11.x_HA集群.md)
   * [kubeadm 部署1.11.x HA集群](k8s/部署/二进制部署Kubernetes v1.11.x(1.12.x) HA可选.md)
@@ -21,5 +20,14 @@
 * [集群配置](okd/README.md)
   * [openshift开启监控](okd/configing_clusters/openshift开启监控.md) 
 
+## ceph
+* [部署](ceph/deploy/README.md)
+  * [ceph-ansible部署](ceph/deploy/ceph-ansible部署.md)
+* [管理](ceph/管理/README.md)
+  * [ceph pool管理](ceph/管理/ceph-ansible部署.md)
+  * [ceph rbd管理](ceph/管理/ceph rbd管理.md)
+  * [ceph运维管理](ceph/管理/ceph运维管理.md)
+
+## OpenStack
 
 ## DevOps
