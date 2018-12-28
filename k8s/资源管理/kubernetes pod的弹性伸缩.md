@@ -1,0 +1,16 @@
+Metrics-server简介
+Metrics-server是用来替换heapster获取集群上资源指标数据的，heapster从1.11开始逐渐被废弃了。
+
+在使用heapster时，获取资源指标是由heapster自已获取的，heapster有自已的获取路径，没有通过apiserver，后来k8s引入了资源指标API(Metrics API)，于是资源指标的数据就从k8s的api中的直接获取，不必再通过其它途径。
+metrics-server： 它是一种API Server，提供了核心的Metrics API，就像k8s组件kube-apiserver提供了很多API群组一样，但它不是k8s组成部分，而是托管运行在k8s之上的Pod。为了让用户无缝的使用metrics-server当中的API，还需要把这类自定义的API，通过聚合器聚合到核心API组里，
+然后可以把此API当作是核心API的一部分，通过kubectl api-versions可直接查看。
+metrics-server收集指标数据的方式是从各节点上kubelet提供的Summary API 即10250端口收集数据，收集Node和Pod核心资源指标数据，主要是内存和cpu方面的使用情况，并将收集的信息存储在内存中，所以当通过kubectl top不能查看资源数据的历史情况，其它资源指标数据则通过prometheus采集了。
+
+k8s中很多组件是依赖于资源指标API的功能 ，比如kubectl top 、hpa，如果没有一个资源指标API接口，这些组件是没法运行的。早期是依赖heapster。
+
+Metrics-server的部署
+有两个项目提供了metrics-server：
+
+github.com/kubernetes-incubator/metrics-server。
+github.com/kubernetes/kubernetes 官方源码树上作为addon提供。
+
