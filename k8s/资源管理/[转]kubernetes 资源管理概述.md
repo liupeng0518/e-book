@@ -1,3 +1,10 @@
+---
+title: [转]kubernetes 资源管理概述
+date: 2018-12-24 09:47:19
+categories: k8s
+tags: [k8s, 资源管理]
+
+---
 > 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 https://cizixs.com/2018/06/25/kubernetes-resource-management/
 
 ## [](#kubernetes-资源简介 "kubernetes 资源简介")kubernetes 资源简介

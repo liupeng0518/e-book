@@ -1,3 +1,10 @@
+---
+title: kubernetes对接ceph
+date: 2018-12-29 09:47:19
+categories: k8s
+tags: [k8s, ceph]
+
+---
 # kubernetes持久化存储Ceph RBD
 ## 静态PV
 

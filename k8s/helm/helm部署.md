@@ -1,3 +1,11 @@
+---
+title: helm部署
+date: 2018-12-29 09:47:19
+categories: k8s
+tags: [k8s, helm]
+
+---
+
 我们需要在[Helm Realese](https://github.com/helm/helm/releases)页面下载二进制文件，并解压后将可执行文件helm拷贝到/usr/local/bin目录下即可，这样Helm客户端就在这台机器上安装完成了。
 
 现在我们可以查看下版本:

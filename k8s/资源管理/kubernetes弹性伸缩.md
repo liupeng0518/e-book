@@ -1,3 +1,10 @@
+---
+title: kubernetes弹性伸缩
+date: 2018-12-24 09:47:19
+categories: k8s
+tags: [k8s, 弹性伸缩]
+
+---
 > 原文：https://rancher.com/blog/2018/2018-08-06-k8s-hpa-resource-custom-metrics/
 
 >Kubernetes的一个很好的功能是能够在运行的服务上自定义autoscale。如果没有autoscaling，则很难适应deployment scaling并满足SLA。本文将向您展示如何使用Horizo​​ntal Pod Autoscale在Kubernetes上自动扩展您的服务。

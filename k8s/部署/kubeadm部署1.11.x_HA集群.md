@@ -1,3 +1,12 @@
+---
+title: kubeadm部署1.11.x_HA集群
+date: 2018-12-24 09:47:19
+categories: k8s
+tags: [k8s, kubeadm]
+
+---
+
+
 # 1 实验环境说明
 实验环境
 lab1: etcd master haproxy keepalived 10.7.12.201

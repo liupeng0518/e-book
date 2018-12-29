@@ -1,3 +1,10 @@
+---
+title: nginx-ingress部署
+date: 2018-12-29 09:47:19
+categories: k8s
+tags: [k8s, ingress]
+
+---
 
 # nginx-ingress 介绍
 Ingress 是一种 Kubernetes 资源，也是将 Kubernetes 集群内服务暴露到外部的一种方式。   

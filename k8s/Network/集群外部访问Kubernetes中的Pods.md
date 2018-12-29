@@ -1,7 +1,8 @@
 ---
 title: 集群外部访问Kubernetes中的Pods.md
+categories: k8s
 tags: kubernetes,network
-grammar_cjkRuby: true
+date: 2018-12-29 09:47:19
 ---
 
 
