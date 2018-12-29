@@ -1,3 +1,10 @@
+---
+title: centos7.1 /etc/resolv.conf刷新问题
+date: 2017-02-24 09:47:19
+categories: k8s
+tags: [docker, registry]
+
+---
 > 原文: https://github.com/cnadeau/blogs/tree/master/docker-registry
 
 # Private Docker Registry Part 1: basic local example
