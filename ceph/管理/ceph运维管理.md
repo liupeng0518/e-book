@@ -1,3 +1,10 @@
+---
+title: ceph运维管理
+date: 2018-12-29 09:47:19
+categories: ceph
+tags: ceph
+
+---
 # 开启监控模块
 在配置文件/etc/ceph/ceph.conf中添加
 ```

@@ -1,3 +1,11 @@
+---
+title: ceph_pool管理
+date: 2018-12-29 09:47:19
+categories: ceph
+tags: [ceph, pool]
+
+---
+
 # 目标
 ceph 下利用命令行对池管理
 

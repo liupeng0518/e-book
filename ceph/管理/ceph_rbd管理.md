@@ -1,3 +1,11 @@
+---
+title: ceph_rbd管理
+date: 2018-12-29 09:47:19
+categories: ceph
+tags: [ceph, rbd]
+
+---
+
 创建块设备映像
 ```
 rbd create --size {megabytes} {pool-name}/{image-name}

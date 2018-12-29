@@ -1,3 +1,10 @@
+---
+title: [转]Ceph PG Inconsistent Error处理
+date: 2018-12-29 09:47:19
+categories: ceph
+tags: ceph
+
+---
 # 问题描述
 ceph集群状态为HEALTH_ERR，ceph -s显示有pg状态不一致，ceph health detail输出如下：
 ```
