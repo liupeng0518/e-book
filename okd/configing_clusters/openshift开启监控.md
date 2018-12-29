@@ -1,3 +1,11 @@
+---
+title: openshift开启监控
+date: 2018-12-29 09:47:19
+categories: openshift
+tags: openshift
+
+---
+
 # OpenShift Metrics部署
 
 OpenShift Metrics 采用Kubernetes原生的kubelet api提供数据，然后使用 heapster进行收集存储到cassandra数据库中，这些监控数据最主要是用来进行 pod autoscalers。
