@@ -1,6 +1,6 @@
 > 原文: https://github.com/cnadeau/blogs/tree/master/docker-registry
 
-#Private Docker Registry Part 1: basic local example
+# Private Docker Registry Part 1: basic local example
 不使用任何认证信息
 
 这里部署一个无需任何验证的仓库, docker-compose.yml
