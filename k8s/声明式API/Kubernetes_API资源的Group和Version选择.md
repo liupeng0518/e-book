@@ -1,7 +1,9 @@
 ---
 title: Kubernetes API 资源应该使用哪个 Group 和 Version? 
-tags: k8s,api
-grammar_cjkRuby: true
+tags: [k8s, api]
+date: 2018-12-24 09:47:19
+categories: k8s
+
 ---
 
 
