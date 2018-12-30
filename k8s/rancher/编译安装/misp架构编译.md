@@ -1,9 +1,21 @@
+# rancher二进制
+```
 go get github.com/rancher/rancher
+```
+或者，建议这种方式
+```
+wget https://github.com/rancher/rancher/archive/v2.1.4.tar.gz
+cp https://github.com/rancher/rancher/archive/v2.1.4.tar.gz $GOPATH/src/github.com/rancher/
 
+```
 
 这里编译的时候要指定tag为k8s
 ```bash
 [root@node152 rancher]# go build -tags k8s
+```
+
+这里会遇到几个错误
+```bash
 # github.com/rancher/rancher/vendor/github.com/fsnotify/fsnotify
 vendor/github.com/fsnotify/fsnotify/inotify.go:39:15: undefined: unix.InotifyInit
 # github.com/rancher/rancher/vendor/github.com/kr/pty
