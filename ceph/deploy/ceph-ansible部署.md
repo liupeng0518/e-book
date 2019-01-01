@@ -5,8 +5,8 @@ categories: ceph
 tags: [ceph, ansible]
 
 ---
-ceph-ansible 官方出品，极大简化工作效率。
-这里简单列出部署一个测试集群。
+
+ceph-ansible 是ceph官方出品，可以极大简化工作效率，这里简单列出部署一个测试集群。
 
 ### 环境说明
 
