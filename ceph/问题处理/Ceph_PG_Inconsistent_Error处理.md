@@ -5,6 +5,7 @@ categories: ceph
 tags: ceph
 
 ---
+
 # 问题描述
 ceph集群状态为HEALTH_ERR，ceph -s显示有pg状态不一致，ceph health detail输出如下：
 ```
