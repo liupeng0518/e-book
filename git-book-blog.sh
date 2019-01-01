@@ -32,6 +32,7 @@ done
 # 提交博客
 cd ${BLOG}
 npm cache clean --force
+npm install hexo-deployer-git --save
 npm install
 
 hexo g
