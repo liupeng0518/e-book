@@ -1,5 +1,6 @@
 ---
 title: [转]kubernetes 资源管理概述
+
 date: 2018-12-23 09:47:19
 categories: k8s
 tags: [k8s, 资源管理]
