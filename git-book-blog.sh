@@ -17,7 +17,7 @@ COMMIT_INFO=$1
 
 pwd
 # 更新md文件
-for dir in ./
+for dir in ./*
 do
 if [ -d "$dir" ]
 then
