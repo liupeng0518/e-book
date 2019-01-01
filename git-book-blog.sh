@@ -36,4 +36,4 @@ npm install
 
 hexo g
 
-#hexo d
+hexo d
