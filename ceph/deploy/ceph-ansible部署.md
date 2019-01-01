@@ -1,9 +1,8 @@
 ---
 title: ceph-ansible部署
-date: 2018-12-29 09:47:19
+date: 2018-12-27 09:47:19
 categories: ceph
 tags: [ceph, ansible]
-
 ---
 
 ceph-ansible 是ceph官方出品，可以极大简化工作效率，这里简单列出部署一个测试集群。
