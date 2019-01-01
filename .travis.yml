@@ -26,4 +26,4 @@ install:
 - npm install hexo-cli -g
 - npm install
 script:
-- bash git-book-blog.sh
+- bash -x git-book-blog.sh
