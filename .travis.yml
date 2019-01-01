@@ -1,0 +1,29 @@
+language: node_js
+node_js:
+- 8.11.2
+branches:
+  only:
+  - master
+before_install:
+#- openssl aes-256-cbc -K $encrypted_c28d92fce543_key -iv $encrypted_c28d92fce543_iv
+#  -in config.tar.gz.enc -out config.tar.gz -d
+
+- git config --global user.name 'liupeng0518'
+- git config --global user.email liupeng0518@gmail.com
+#- git clone https://github.com/liupeng0518/e-book.git ~/e-book
+- git clone -b hexo https://github.com/liupeng0518/liupeng0518.github.io.git ~/github.io
+- openssl aes-256-cbc -K $encrypted_c28d92fce543_key -iv $encrypted_c28d92fce543_iv
+  -in .travis/config.tar.gz.enc -out ~/config.tar.gz -d
+- export start_time=$(date +%s)
+- tar zxf ~/config.tar.gz -C ~
+- mkdir -p ~/.ssh
+- mv ~/id_rsa ~/.ssh/
+- chmod 600 ~/.ssh/id_rsa
+- eval $(ssh-agent)
+- ssh-add ~/.ssh/id_rsa
+- df -h
+install:
+- npm install hexo-cli -g
+- npm install
+script:
+- bash git-book-blog.sh
