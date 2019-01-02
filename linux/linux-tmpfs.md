@@ -1,7 +1,7 @@
 ---
 title: tmpfs
 date: 2018-06-28 10:10:39
-categories: 运维
+categories: linux
 tags: [, linux]
 ---
 

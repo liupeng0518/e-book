@@ -1,7 +1,7 @@
 ---
 title: ssh 参数--MaxSessions
 date: 2017-03-09 14:18:24
-categories: 运维
+categories: linux
 tags: [ssh, linux]
 ---
 # 问题描述
