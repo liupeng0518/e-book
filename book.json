@@ -5,6 +5,8 @@
     "lunr",
     "search",
     "highlight",
-    "livereload"
+    "livereload",
+    "toggle-chapters",
+    "theme-comscore"
   ]
 }
