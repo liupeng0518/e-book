@@ -5,6 +5,7 @@ categories: k8s
 tags: [k8s, helm]
 
 ---
+# 部署客户端
 
 我们需要在[Helm Realese](https://github.com/helm/helm/releases)页面下载二进制文件，并解压后将可执行文件helm拷贝到/usr/local/bin目录下即可，这样Helm客户端就在这台机器上安装完成了。
 
@@ -16,6 +17,8 @@ Error: could not find tiller
 
 ```
 这里提示无法连接到服务端，接下来我们初始化服务端。
+
+# 部署服务端
 
 安装 Helm 的服务端程序，我们需要使用到kubectl工具，所以先确保kubectl工具能够正常的访问 kubernetes 集群的apiserver。
 
@@ -79,14 +82,47 @@ deployment.extensions/tiller-deploy patched
 
 ```
 至此, Helm客户端和服务端都配置完成。
-可以查看一下仓库：
+# 仓库管理
+
+查看一下仓库：
 
 ```bash
 [root@lab1 helm]# helm  repo list
 NAME         	URL                                                        
-stable       	https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts     
+stable       	https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts
 local        	http://localhost:8879/charts                               
 fabric8      	https://fabric8.io/helm                                    
 bitnami      	https://charts.bitnami.com/bitnami                         
 aliyun-stable	https://acs-k8s-ingress.oss-cn-hangzhou.aliyuncs.com/charts
 ```
+
+移除repo：
+```
+[root@k8s-m1 helm]# helm  repo remove stable
+"stable" has been removed from your repositories
+[root@k8s-m1 helm]# helm repo list
+NAME 	URL                         
+local	http://127.0.0.1:8879/charts
+
+
+```
+添加repo：
+
+```
+[root@k8s-m1 helm]# helm repo add stable https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts
+"stable" has been added to your repositories
+[root@k8s-m1 helm]# helm repo update
+Hang tight while we grab the latest from your chart repositories...
+...Skip local chart repository
+...Successfully got an update from the "stable" chart repository
+Update Complete. ⎈ Happy Helming!⎈ 
+[root@k8s-m1 helm]# helm repo list
+NAME  	URL                                                   
+local 	http://127.0.0.1:8879/charts                          
+stable	https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts
+
+
+```
+
+
+
