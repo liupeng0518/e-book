@@ -1,3 +1,13 @@
+---
+title: openshift delete serviceinstance
+date: 2018-12-29 09:47:19
+categories: openshift
+tags: openshift
+
+---
+
+
+
 # 问题描述
 openshift catlog中 经常遇见从dashboard中删除Provisioned Services 时 会出现pending 状态。
 
