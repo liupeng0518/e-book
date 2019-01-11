@@ -15,7 +15,7 @@ tags: [k8s, 资源管理]
 
 在 kubernetes 中，有两个基础但是非常重要的概念：node 和 pod。node 翻译成节点，是对集群资源的抽象；pod 是对容器的封装，是应用运行的实体。node 提供资源，而 pod 使用资源，这里的资源分为计算（cpu、memory、gpu）、存储（disk、ssd）、网络（network bandwidth、ip、ports）。这些资源提供了应用运行的基础，正确理解这些资源以及集群调度如何使用这些资源，对于大规模的 kubernetes 集群来说至关重要，不仅能保证应用的稳定性，也可以提高资源的利用率。
 
-在这篇文章，我们主要介绍 CPU 和内存这两个重要的资源，它们虽然都属于计算资源，但也有所差距。CPU 可分配的是使用时间，也就是操作系统管理的时间片，每个进程在一定的时间片里运行自己的任务（另外一种方式是绑核，也就是把 CPU 完全分配给某个 pod 使用，但这种方式不够灵活会造成严重的资源浪费，kubernetes 中并没有提供）；而对于内存，系统提供的是内存大小。
+在这篇文章，我们主要介绍 CPU 和内存这两个重要的资源，它们虽然都属于计算资源，但也有所差距。CPU 可分配的是使用时间，也就是操作系统管理的时间片，每个进程在一定的时间片里运行自己的任务（另外一种方式是绑核，也就是把 CPU 完全分配给某个 pod 使用，但这种方式不够灵活会造成严重的资源浪费，kubernetes 中并没有提供）；而对于内存，系统提供的是内存大小(同样磁盘也是不可压缩资源)。
 
 CPU 的使用时间是可压缩的，换句话说它本身无状态，申请资源很快，也能快速正常回收；而内存大小是不可压缩的，因为它是有状态的（内存里面保存的数据），申请资源很慢（需要计算和分配内存块的空间），并且回收可能失败（被占用的内存一般不可回收）。
 
@@ -23,7 +23,7 @@ CPU 的使用时间是可压缩的，换句话说它本身无状态，申请资�
 
 在 kubernetes 集群管理中，有一个非常核心的功能：就是为 pod 选择一个主机运行。调度必须满足一定的条件，其中最基本的是主机上要有足够的资源给 pod 使用。
 
-![](https://cdn-images-1.medium.com/max/800/1*PfGIiTw68JLIUyo0FQY2dA.png)
+![](/k8s/.images/1_PfGIiTw68JLIUyo0FQY2dA.png)
 
 资源除了和调度相关之外，还和很多事情紧密相连，这正是这篇文章要解释的。
 
@@ -48,7 +48,7 @@ CPU 的使用时间是可压缩的，换句话说它本身无状态，申请资�
 
 这两块预留之后的资源才是 pod 真正能使用的，不过考虑到 eviction 机制（下面的章节会提到），kubelet 会保证节点上的资源使用率不会真正到 100%，因此 pod 的实际可使用资源会稍微再少一点。主机上的资源逻辑分配图如下所示：
 
-![](https://i.loli.net/2018/06/25/5b3106f947190.png)
+![](/k8s/.images/5b3106f947190.png)
 
 **NOTE：**需要注意的是，allocatable 不是指当前机器上可以分配的资源，而是指能分配给 pod 使用的资源总量，一旦 kubelet 启动这个值是不会变化的。
 
@@ -399,3 +399,4 @@ kubernetes 官方文档：
 *   [DEM19 Advanced Auto Scaling and Deployment Tools for Kubernetes and E…](https://www.slideshare.net/AmazonWebServices/dem19-advanced-auto-scaling-and-deployment-tools-for-kubernetes-and-ecs)
 *   [Kubernetes Resource QoS 机制解读](https://my.oschina.net/jxcdwangtao/blog/837875)
 *   [深入解析 kubernetes 资源管理，容器云牛人有话说 - 简书](https://www.jianshu.com/p/a5a7b3fb6806)
+*   https://www.kubernetes.org.cn/1150.html

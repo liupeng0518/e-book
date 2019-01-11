@@ -5,20 +5,40 @@ categories: k8s
 tags: [k8s, deploy]
 
 ---
-1. kubeasz
+这里罗列了barematal下的部署选型
+# k8s自动化部署
+
+## kubeasz
 项目地址：
 https://github.com/gjmzj/kubeasz.git
 
 国人做的项目，支持的插件相对比较全面。
 
-2. kubespray
+## kubespray
 项目地址：
 https://github.com/kubernetes-sigs/kubespray.git
 
 社区孵化项目，官方项目，支持有限的部件。
 
-3. breeze
+## breeze
 项目地址：
 https://github.com/wise2c-devops/breeze
 
 深圳睿云智合开源的项目，支持图形化部署。
+
+
+# 存储
+## glusterfs
+
+## ceph
+
+## nfs
+
+
+
+# 业务及中间件
+
+## helm
+
+## manifest
+

@@ -57,12 +57,23 @@ EXTERNAL-IP 就是我们需要的外部 IP 地址，通过访问它就可以访�
 
 
 # Bare Metal 环境下流量导入
+barematal可以参考官方文档：
+https://kubernetes.github.io/ingress-nginx/deploy/#bare-metal
+
+https://kubernetes.github.io/ingress-nginx/deploy/baremetal/
+
+我这里简单罗列了集中方式，仅供参考：
+
 在使用 Bare Metal 的时候可以有几种方式：
 
-	 - hostNetwork 
-	 - hostPort
-	 - nodePort
-	 - externalIP
+- A pure software solution: MetalLB
+- Over a NodePort Service
+- Via the host network
+- Using a self-provisioned edge
+- External IPs
+
+# MetalLB
+待补充...
 
 ## EXTERNAL-IP
 
@@ -84,7 +95,23 @@ helm install --name nginx-ingress --set "rbac.create=true,controller.service.ext
 
 ```
 这种方式提供了一种，基于 IPVS 的 Bare metal环境下Kubernetes Ingress边缘节点的高可用。
-如果这里不适用的ipvs，那么需要使用keepalived代替 提供vip支持。
+如果这里不使用的ipvs，那么需要使用keepalived代替 提供vip支持。
+亦或是：这里提供多组ip: 
+```
+spec:
+  externalIPs:
+  - 203.0.113.2
+  - 203.0.113.3
+```
+然后将域名同时解析到externalIPs里。
+
+>
+> 这里提到了externalIP在ingress中的几种使用方式:
+> 1. ipvs(k8s 1.11 后可直接切换为ipvs)
+> 2. keepalived(自建)
+> 3. 多组externalIPs
+>
+
 
 这时我们去任意节点查看：
 ```bash
@@ -357,8 +384,131 @@ default backend - 404
 ```
 
 运行成功我们就可以创建 Ingress 来将外部流量导入集群内部啦，外部 IP 是我们的 边缘节点 的 IP，公网和内网 IP 都算，我用的 lab4 这个节点，并且它有公网 IP，我就可以通过公网 IP 来访问了，如果再给这个公网 IP 添加 DNS 记录，我就可以用域名访问了。
+
+这里一点要注意：
+
+hostnetwork下pod会继承宿主机的网络协议,也就是使用了主机的dns,会导致svc的请求直接走宿主机的上到公网的dns服务器而非集群里的dns server,需要设置pod的dnsPolicy: ClusterFirstWithHostNet即可
+
 ### 高可用
 此时部署成功之后，这里同样需要通过keepalived或外部LB提供高可用
+
+示例：
+```
+[root@k8s-m1 deploy]# kubectl get nodes --show-labels
+NAME     STATUS   ROLES    AGE   VERSION   LABELS
+k8s-m1   Ready    master   22d   v1.12.3   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/hostname=k8s-m1,node-role.kubernetes.io/master=,node=edge
+k8s-m2   Ready    master   22d   v1.12.3   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/hostname=k8s-m2,node-role.kubernetes.io/master=,node=edge
+k8s-m3   Ready    master   22d   v1.12.3   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/hostname=k8s-m3,node-role.kubernetes.io/master=,node=edge
+k8s-n1   Ready    node     22d   v1.12.3   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/hostname=k8s-n1,node-role.kubernetes.io/node=
+k8s-n2   Ready    node     22d   v1.12.3   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/hostname=k8s-n2,node-role.kubernetes.io/node=
+
+
+```
+
+edge节点keepalived（这里同时兼master高可用）配置：
+```
+[root@k8s-m1 deploy]# cat /etc/keepalived/keepalived.conf 
+vrrp_script haproxy-check {
+    script "/bin/bash /etc/keepalived/check_haproxy.sh"
+    interval 3
+    weight -2
+    fall 10
+    rise 2
+}
+
+vrrp_instance haproxy-vip {
+    state BACKUP
+    priority 101
+    interface eth0
+    virtual_router_id 47
+    advert_int 3
+
+    unicast_peer {
+	10.7.12.201
+	10.7.12.202
+	10.7.12.203
+    }
+
+    virtual_ipaddress {
+        10.7.12.200
+    }
+
+    track_script {
+        haproxy-check
+    }
+}
+
+virtual_server 10.7.12.200 443 {
+    delay_loop 6
+    lb_algo loadbalance
+    lb_kind DR
+    nat_max 255.255.0.0
+    persistence_timeout 50
+    protocol TCP
+
+    real_server 10.7.12.204 443 {
+        weight 1
+        TCP_CHECK {
+          connect_timeout 3
+        }
+    }
+    real_server 10.7.2.205 443 {
+        weight 1
+        TCP_CHECK {
+          connect_timeout 3
+        }
+    }
+
+}
+
+
+virtual_server 10.7.12.200 80 {
+    delay_loop 6
+    lb_algo loadbalance
+    lb_kind DR 
+    nat_max 255.255.0.0
+    persistence_timeout 50
+    protocol TCP
+
+    real_server 10.7.12.204 80 {
+        weight 1
+        TCP_CHECK {
+          connect_timeout 3
+        }
+    }
+    real_server 10.7.2.205 80 {
+        weight 1 
+        TCP_CHECK {
+          connect_timeout 3
+        }
+    }
+
+}
+
+
+```
+```
+[root@k8s-m1 deploy]# cat /etc/keepalived/check_haproxy.sh 
+#!/bin/bash
+VIRTUAL_IP=10.7.12.200
+
+errorExit() {
+    echo "*** $*" 1>&2
+    exit 1
+}
+
+if ip addr | grep -q $VIRTUAL_IP ; then
+    curl -s --max-time 2 --insecure https://${VIRTUAL_IP}:8443/ -o /dev/null || errorExit "Error GET https://${VIRTUAL_IP}:8443/"
+fi
+
+```
+
+
+这时访问vip即可
+```
+[root@k8s-m1 deploy]# curl 10.7.12.200
+default backend - 404
+```
 
 ### 测试
 我们来创建一个服务测试一下，先创建一个 my-nginx.yaml
@@ -454,9 +604,10 @@ https://github.com/kubernetes/ingress-nginx/blob/nginx-0.20.0/docs/deploy/index.
 
 ```bash
 git clone https://github.com/kubernetes/ingress-nginx.git
-git checkout nginx-0.20.0
+git checkout nginx-0.20.1
 cd ~/ingress-nginx/deploy
 kubectl apply -f mandatory.yaml
+
 
 # baremetal方式部署
 # 这里可以修改yaml，指定nodePort，默认是动态生成

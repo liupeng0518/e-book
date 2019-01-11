@@ -1,6 +1,6 @@
 ---
 title: openshift delete serviceinstance
-date: 2018-12-29 09:47:19
+date: 2019-1-9 09:47:19
 categories: openshift
 tags: openshift
 
