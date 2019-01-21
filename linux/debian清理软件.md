@@ -1,8 +1,8 @@
 ---
 title: debian/ubuntu 清理软件卸载残留
 date: 2019-1-18 09:47:19
-categories: vagrant
-tags: [linux, vagrant]
+categories: debian
+tags: [ubuntu, debian]
 
 ---
 
