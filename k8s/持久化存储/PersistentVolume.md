@@ -40,13 +40,13 @@ PersistentVolume（PV）用于为用户和管理员提供如何提供和消费�
 
 PV 是由 Kubernetes 的集群管理员创建的，PV 代表真实的存储，PV 提供的这些存储对于集群中所有的用户都是可用的。它们存在于 Kubernetes API 中，并可被 Pod 作为真实存储使用。在静态供应的情况下，由集群管理员预先创建 PV，开发者创建 PVC 和 Pod，Pod 通过 PVC 使用 PV 提供的存储。静态供应方式的过程如下图所示：
 
-![](https://github.com/liupeng0518/e-book/blob/master/k8s/.images/static_provisioning.png)
+![](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/static_provisioning.png)
 
 ### **2.1.2** **动态（****Dynamic****）**
 
 对于动态的提供方式，当管理员创建的静态 PV 都不能够匹配用户的 PVC 时，集群会尝试自动为 PVC 提供一个存储卷，这种提供方式基于 StorageClass。在动态提供方向，PVC 需要请求一个存储类，但此存储类必须有管理员预先创建和配置。集群管理员需要在 API Server 中启用 DefaultStorageClass 的接入控制器。动态供应过程如下图所示：
 
-![](https://github.com/liupeng0518/e-book/blob/master/k8s/.images/Dynamic_provisioning.png)
+![](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/Dynamic_provisioning.png)
 
 ## **2.2** **绑定**
 
@@ -119,24 +119,26 @@ PV 的回收策略向集群阐述了在 PVC 释放卷时，应如何进行后续
 
 持久化存储卷的可以通过 YAML 配置文件进行，并指定使用哪个插件类型，下面是一个持久化存储卷的 YAML 配置文件。在此配置文件中要求提供 5Gi 的存储空间，存储模式为 _Filesystem ，_访问模式是 _ReadWriteOnce_，通过 Recycle 回收策略进行持久化存储卷的回收，指定存储类为 slow，使用 nfs 的插件类型。需要注意的是，nfs 服务需要提供存在。
 
-<pre>**_apiVersion_****_:_****_v1_**
-**_kind_****_:_****_PersistentVolume_**
-**_metadata_****_:_**
-**_name_****_:_****_pv0003_**
-**_spec_****_:_**
-**_capacity_****_: #_****_容量_**
-**_storage_****_:_****_5Gi_**
-**_volumeMode_****_:_****_Filesystem #_****_存储卷模式_**
-**_accessModes_****_: #_****_访问模式_**
-**_-_** **_ReadWriteOnce_**
-**_persistentVolumeReclaimPolicy_****_:_****_Recycle #_****_持久化卷回收策略_**
-**_storageClassName_****_:_****_slow #_****_存储类_**
-**_mountOptions_****_: #_****_挂接选项_**
-**_-_** **_hard_**
-**_-_** **_nfsvers=4.1_**
-**_nfs_****_:_**
-**_path_****_:_****_/tmp_**
-**_server_****_:_****_172.17.0.2_**</pre>
+```yaml
+apiVersion:v1
+kind:PersistentVolume
+metadata:
+  name:pv0003
+spec:
+  capacity: #容量
+     storage:5Gi
+  volumeMode:Filesystem #存储卷模式
+  accessModes: #访问模式
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy:Recycle #持久化卷回收策略
+  storageClassName:slow #存储类
+  mountOptions: #挂接选项
+   - hard
+   - nfsvers=4.1
+  nfs:
+     path:/tmp
+     server:172.17.0.2 
+```
 
 ## **3.1** **容量（****Capacity****）**
 
@@ -164,43 +166,35 @@ PV 的回收策略向集群阐述了在 PVC 释放卷时，应如何进行后续
 
 一个卷不论支持多少种访问模式，同时只能以一种访问模式加载。例如一个 GCEPersistentDisk 既能支持 ReadWriteOnce，也能支持 ReadOnlyMany。
 
-| 
 
-存储卷插件
 
- | 
 
-ReadWriteOnce
+| 存储卷插件           | ReadWriteOnce | ReadOnlyMany | ReadWriteMany                      |
+| -------------------- | ------------- | ------------ | ---------------------------------- |
+| AWSElasticBlockStore | ✓             | –            | –                                  |
+| AzureFile            | ✓             | ✓            | ✓                                  |
+| AzureDisk            | ✓             | –            | –                                  |
+| CephFS               | ✓             | ✓            | ✓                                  |
+| Cinder               | ✓             | –            | –                                  |
+| FC                   | ✓             | ✓            | –                                  |
+| FlexVolume           | ✓             | ✓            | –                                  |
+| Flocker              | ✓             | –            | –                                  |
+| GCEPersistentDisk    | ✓             | ✓            | –                                  |
+| Glusterfs            | ✓             | ✓            | ✓                                  |
+| HostPath             | ✓             | –            | –                                  |
+| iSCSI                | ✓             | ✓            | –                                  |
+| PhotonPersistentDisk | ✓             | –            | –                                  |
+| Quobyte              | ✓             | ✓            | ✓                                  |
+| NFS                  | ✓             | ✓            | ✓                                  |
+| RBD                  | ✓             | ✓            | –                                  |
+| VsphereVolume        | ✓             | –            | – (works when pods are collocated) |
+| PortworxVolume       | ✓             | –            | ✓                                  |
+| ScaleIO              | ✓             | ✓            | –                                  |
+| StorageOS            | ✓             | –            | –                                  |
 
- | 
 
-ReadOnlyMany
 
- | 
 
-ReadWriteMany
-
- |
-| AWSElasticBlockStore | ✓ | – | – |
-| AzureFile | ✓ | ✓ | ✓ |
-| AzureDisk | ✓ | – | – |
-| CephFS | ✓ | ✓ | ✓ |
-| Cinder | ✓ | – | – |
-| FC | ✓ | ✓ | – |
-| FlexVolume | ✓ | ✓ | – |
-| Flocker | ✓ | – | – |
-| GCEPersistentDisk | ✓ | ✓ | – |
-| Glusterfs | ✓ | ✓ | ✓ |
-| HostPath | ✓ | – | – |
-| iSCSI | ✓ | ✓ | – |
-| PhotonPersistentDisk | ✓ | – | – |
-| Quobyte | ✓ | ✓ | ✓ |
-| NFS | ✓ | ✓ | ✓ |
-| RBD | ✓ | ✓ | – |
-| VsphereVolume | ✓ | – | – (works when pods are collocated) |
-| PortworxVolume | ✓ | – | ✓ |
-| ScaleIO | ✓ | ✓ | – |
-| StorageOS | ✓ | – | – |
 
 ## **3.4** **类（****Class****）**
 
@@ -240,23 +234,25 @@ ReadWriteMany
 
 下面是一个名称为 myclaim 的 PVC YAML 配置文件，它的访问模式为 ReadWriteOnce，存储卷模式是 Filesystem，需要的存储空间大小为 8Gi，指定的存储类为 slow，并设置了标签选择器和匹配表达式。
 
-<pre>**_kind: PersistentVolumeClaim_**
-**_apiVersion: v1_**
-**_metadata:_**
-**_  name: myclaim_**
-**_spec:_**
-**_  accessModes: #_****_访问模式_**
-**_    - ReadWriteOnce_**
-**_  volumeMode: Filesystem #_****_存储卷模式_**
-**_  resources: #_****_资源_**
-**_    requests:_**
-**_      storage: 8Gi_**
-**_  storageClassName: slow #_****_存储类_**
-**_  selector: #_****_选择器_**
-**_    matchLabels:_**
-**_      release: "stable"_**
-**_    matchExpressions: #_****_匹配表达式_**
-**_      - {key: environment, operator: In, values: [dev]}_**</pre>
+```yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: myclaim
+spec:
+  accessModes: #访问模式
+    - ReadWriteOnce
+  volumeMode: Filesystem #存储卷模式
+  resources: #资源
+    requests:
+      storage: 8Gi
+  storageClassName: slow #存储类
+  selector: #选择器
+    matchLabels:
+      release: "stable"
+    matchExpressions: #匹配表达式
+      - {key: environment, operator: In, values: [dev]}
+```
 
 ## **4.1 ** **选择器**
 
@@ -275,21 +271,23 @@ ReadWriteMany
 
 Pod 通过使用 PVC 来访问存储，而 PVC 必须和使用它的 Pod 在同一个命名空间中。Pod 会同一个命名空间中选择一个合适的 PVC，并使用 PVC 为其获取存储卷，并将 PV 挂接到主机和 Pod 上。
 
-<pre>**_kind:Pod_**
-**_apiVersion:v1_**
-**_metadata:_**
-**_name:mypod_**
-**_spec:_**
-**_containers:_**
-**_- name:myfrontend_**
-**_image:dockerfile/nginx_**
-**_volumeMounts: #_****_挂接存储卷_**
-**_- mountPath:"/var/www/html" #_****_挂接的路径_**
-**_name:mypd #_****_所要挂接的存储卷的名称_**
-**_volumes: #_****_定义存储卷_**
-**_- name:mypd_**
-**_persistentVolumeClaim: #_****_所使用的持久化存储卷声明_**
-**_claimName:myclaim_**</pre>
+```yaml
+kind:Pod
+apiVersion:v1
+metadata:
+  name:mypod
+spec:
+  containers:
+  - name:myfrontend
+    image:dockerfile/nginx
+     volumeMounts: #挂接存储卷
+     - mountPath:"/var/www/html" #挂接的路径
+       name:mypd #所要挂接的存储卷的名称
+ volumes: #定义存储卷
+ - name:mypd
+   persistentVolumeClaim: #所使用的持久化存储卷声明
+     claimName:myclaim
+```
 
 # 参考资料
 
