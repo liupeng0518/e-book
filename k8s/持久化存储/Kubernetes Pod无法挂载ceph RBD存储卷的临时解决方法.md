@@ -106,6 +106,7 @@ NAMESPACE                    NAME                                    READY     S
 default                      index-api-3362878852-m6k0j              1/1       Running   0          10s       172.16.57.7    10.46.181.146   app=index-api,pod-template-hash=3362878852
 ```
 三、问题简要分析
+
 从问题现象来看，起因是由于index-api pod被从10.47.136.60这个node调度到 10.46.181.146这个node上而导致的。但是为什么image的lock没有释放的确怪异，因为我的index-api是捕捉pod退回信号，支持优雅退出的：
 ```
 # kubectl delete -f index-api-deployment.yaml
@@ -123,6 +124,7 @@ deployment "index-api" deleted
 因此，初步猜测：这里很可能是kubernetes在监视和处理pod退出时，对于存储插件的状态处理存在一些bug，至于具体什么问题，还不得而知。
 
 四、小结
+
 对于像index-api service这样的stateful服务来说，使用普通deployment显然不能满足要求。Kubernetes在[1.3.0, 1.5.0)版本区间提供了处于alpha状态的PetSet controller，在1.5.0版本后，PetSet被改名为StatefulSet。与普通Pod不同，PetSet下面的每个Pet都有严格的身份属性，并根据身份属性绑定一定资源，并且不会像普通Pod那样被Kubernetes随意调度到任意Node上。
 
 像index-api-service索引服务这样的一个实例绑定一个cephRBD pv的应用，特别适合使用PetSet或StatefulSet，不过我这里尚未测试用上PetSet后是否还会出现无法挂载rbd卷的问题。
