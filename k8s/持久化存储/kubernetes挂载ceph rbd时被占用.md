@@ -1,3 +1,9 @@
+---
+title: kubernetes挂载ceph rbd时被占用
+categories: k8s
+tags: [k8s, PersistentVolume,ceph]
+
+---
 在kubernetes中使用ceph rbd做为挂载存储，可能会遇到一个bug：
 
 https://github.com/kubernetes/kubernetes/issues/67474
