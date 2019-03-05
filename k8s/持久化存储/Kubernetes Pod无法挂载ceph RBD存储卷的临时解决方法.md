@@ -1,3 +1,9 @@
+---
+title: Kubernetes Pod无法挂载ceph RBD存储卷的临时解决方法
+categories: k8s
+tags: [k8s, PersistentVolume,ceph]
+
+---
 转载: [Kubernetes Pod无法挂载ceph RBD存储卷的临时解决方法.md](https://tonybai.com/2017/02/17/temp-fix-for-pod-unable-mount-cephrbd-volume/)
 
 一、问题起因
