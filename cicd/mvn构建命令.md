@@ -1,3 +1,9 @@
+---
+title: mvn构建命令介绍
+categories: cicd
+tags: [cicd, maven]
+
+---
 
 mvn clean package依次执行了clean、resources、compile、testResources、testCompile、test、jar(打包)等7个阶段。
 
