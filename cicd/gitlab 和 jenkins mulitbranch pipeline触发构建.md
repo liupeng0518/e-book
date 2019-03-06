@@ -35,4 +35,8 @@ jenkins的多分支pipeline构建中，是无法在设置界面设置触发方�
 - http://JENKINS_URL/project/FOLDER/PROJECT_NAME
 
 参考：
+https://github.com/jenkinsci/gitlab-plugin#job-trigger-configuration
+
+https://github.com/jenkinsci/kubernetes-plugin
+
 https://stackoverflow.com/questions/52148634/how-to-add-webhooks-in-gitlab-for-multibranch-pipeline-jenkins
