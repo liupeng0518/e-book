@@ -1,8 +1,8 @@
 ---
-title: Kubernetes Pod无法挂载ceph RBD存储卷的临时解决方法
+title: kubernetes支持local volume
 date: 2019-03-05 09:47:19
 categories: k8s
-tags: [k8s, PersistentVolume,ceph]
+tags: [k8s, PersistentVolume,local volume]
 
 ---
 转载: https://ieevee.com/tech/2019/01/17/local-volume.html
