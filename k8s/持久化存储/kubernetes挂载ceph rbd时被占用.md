@@ -1,5 +1,6 @@
 ---
 title: kubernetes挂载ceph rbd时被占用
+date: 2019-03-05 09:47:19
 categories: k8s
 tags: [k8s, PersistentVolume,ceph]
 
