@@ -1,5 +1,6 @@
 ---
 title: mvn构建命令介绍
+date: 2019-03-05 09:47:19
 categories: cicd
 tags: [cicd, maven]
 

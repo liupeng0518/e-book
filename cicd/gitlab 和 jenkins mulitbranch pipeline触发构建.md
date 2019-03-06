@@ -1,5 +1,6 @@
 ---
 title: gitlab 和 jenkins mulitbranch pipeline触发构建
+date: 2019-03-05 09:47:19
 categories: cicd
 tags: [cicd, jenkins]
 
