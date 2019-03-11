@@ -1,7 +1,7 @@
 ---
 title: 集群外部访问Kubernetes中的Pods
 categories: k8s
-tags: kubernetes,network
+tags: [kubernetes, network]
 date: 2018-12-29 09:47:19
 ---
 
