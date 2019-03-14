@@ -105,3 +105,7 @@ https://access.redhat.com/solutions/2795451
 https://wizardforcel.gitbooks.io/vbird-linux-basic-4e/content/160.html
 
 https://unix.stackexchange.com/questions/362681/systemd-journal-what-is-the-relation-of-dev-log-and-syslog
+
+http://atbug.com/rsyslogd-high-cpu-trouble-shooting/
+
+https://access.redhat.com/solutions/392433
