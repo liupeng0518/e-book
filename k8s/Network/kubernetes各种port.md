@@ -1,7 +1,7 @@
 ---
 title: kubernetes各种端口
 categories: k8s
-tags: [kubernetes, port]
+tags: [k8s, port]
 date: 2018-12-29 09:47:19
 ---
 
