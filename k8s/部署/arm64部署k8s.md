@@ -1,3 +1,11 @@
+---
+title: arm64部署k8s
+date: 2019-03-20 09:47:19
+categories: k8s
+tags: [k8s, kubeadm]
+
+---
+
 # 准备
 3.1.1 仓库准备
 ```
