@@ -88,7 +88,7 @@ ENTRYPOINT ["/go/bin/app"]
 
 构建镜像
 ```
-$ docker build -f Dockerfile-amd64 -t liupeng0518/test-arch:amd64 .
+# docker build -f Dockerfile-amd64 -t liupeng0518/test-arch:amd64 .
 
 ```
 
@@ -113,7 +113,24 @@ ENTRYPOINT ["/go/bin/app"]
 
 构建镜像
 ```
-$ docker build -f Dockerfile-arm -t liupeng0518/test-arch:arm .
+# docker build -f Dockerfile-arm -t liupeng0518/test-arch:arm .
 ```
+推送
+
+```
+# docker push  liupeng0518/test-arch:arm
+
+```
+
+本地run测试:
+
+```
+# docker run -it liupeng0518/test-arch:arm
+Hello, 世界!
+GOOS: linux
+GOARCH arm
+
+```
+
 
 ## Multi-Architecture Manifest

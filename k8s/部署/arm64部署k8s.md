@@ -2,7 +2,7 @@
 title: arm64部署k8s
 date: 2019-03-20 09:47:19
 categories: k8s
-tags: [k8s, kubeadm]
+tags: [k8s, kubeadm, arm]
 
 ---
 
