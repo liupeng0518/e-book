@@ -6,12 +6,13 @@ tags: [docker, ]
 
 ---
 
-docker现在已经支持构建多cpu架构images,这里我们将一步步的实现arm和amd64架构的docker images
+docker现在已经支持构建多cpu架构images,这里我们将一步步的实现arm64和amd64架构的docker images
 
 # Multi architecture Docker Image
 Docker image 存储设计之初，没有充分考虑到镜像Multi architecture的支持，而是简单的使用镜像存储库的前缀来区分相同应用的不同平台，并建议开发者将不同平台的镜像应该push到相对应的Docker hub的镜像仓库中，目前这种设计依旧保存在最新的Docker设计文档中：
 
 https://github.com/docker-library/official-images#architectures-other-than-amd64
+
 我们可以基于镜像存储库的前缀，或者是基于tag或image名称后缀来区分不同的运行平台来pull相应的Docker镜像，例如：
 
 ```
@@ -212,42 +213,12 @@ Created manifest list docker.io/liupeng0518/test-arch:latest
 }
 
 ```
-次清单中，我们可以看到两个都是amd64架构的，我们来修正：
+
+此清单中，如果有问题可以如下命令修复：
 ```
 ➜ docker manifest annotate --arch arm liupeng0518/test-arch liupeng0518/test-arch:arm 
 ```
-
-再次查看：
-
-```
-{
-   "schemaVersion": 2,
-   "mediaType": "application/vnd.docker.distribution.manifest.list.v2+json",
-   "manifests": [
-      {
-         "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
-         "size": 590,
-         "digest": "sha256:27e502b80483754f464e4f8b1036355148b2599712a73dbcf1c6763aa2efd588",
-         "platform": {
-            "architecture": "amd64",
-            "os": "linux"
-         }
-      },
-      {
-         "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
-         "size": 590,
-         "digest": "sha256:aaa952b43d5d9390d6fb540223177a42807c4deac78a4564ebd22d36a86b54b0",
-         "platform": {
-            "architecture": "arm",
-            "os": "linux"
-         }
-      }
-   ]
-}
-
-```
-已经修正了，那么我们push此image：
-
+推送镜像
 ```
 ➜ docker manifest push docker.io/liupeng0518/test-arch:latest
 ```
@@ -265,5 +236,19 @@ Status: Downloaded newer image for liupeng0518/test-arch:latest
 Hello, 世界!
 GOOS: linux
 GOARCH amd64
+
+```
+
+arm64
+
+```
+docker run -it   liupeng0518/test-arch
+Unable to find image 'liupeng0518/test-arch:latest' locally
+latest: Pulling from liupeng0518/test-arch
+Digest: sha256:c411f59f30210801e7f0921cb9350455f66ef67a23175bd136fddb4663afa0f6
+Status: Downloaded newer image for liupeng0518/test-arch:latest
+Hello, 世界!
+GOOS: linux
+GOARCH arm
 
 ```
