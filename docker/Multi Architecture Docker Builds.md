@@ -40,13 +40,13 @@ Docker社区早就注意到了这个问题，并通过重新定义 v2.2 Image sp
 自从Docker registry v2.3和Docker 1.10开始，Docker通过支持新的image Media 类型 manifest list 实现了Multi architecture Docker镜像功能：
 
 1. 一个image manifest list 包含指向已经存在镜像的manifest对象列表
-![docker_image_manifest_list.png]()
+![docker_image_manifest_list.png](https://raw.githubusercontent.com/liupeng0518/e-book/master/docker/.images/docker_image_manifest_list.png)
 
 2. 一个image manifest list包含已经存在镜像的manifest对象的平台特性（CPU arch和OS类型）特征
-![docker_image_manifest_os.png]()
+![docker_image_manifest_os.png](https://raw.githubusercontent.com/liupeng0518/e-book/master/docker/.images/docker_image_manifest_os.png)
 
 根据manifest list对象定义，我们可以通过下面的流程了解Docker是如何支持Multi architecture Docker镜像的：
-![docker_image_manifest_流程图.png]()
+![docker_image_manifest_流程图.png](https://raw.githubusercontent.com/liupeng0518/e-book/master/docker/.images/docker_image_manifest_流程图.png)
 
 # 实践
 ## 准备
