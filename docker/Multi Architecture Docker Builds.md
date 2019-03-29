@@ -3,6 +3,7 @@ title: 多架构 CPU docker 镜像构建
 date: 2019-03-28 09:47:19
 categories: docker
 tags: [docker, ]
+mermaid: true
 
 ---
 
