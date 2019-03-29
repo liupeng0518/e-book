@@ -3,8 +3,6 @@ title: 多架构 CPU docker 镜像构建
 date: 2019-03-28 09:47:19
 categories: docker
 tags: [docker, ]
-mermaid: true
-
 ---
 
 docker现在已经支持构建多cpu架构images,这里我们将一步步的实现arm64和amd64架构的docker images
