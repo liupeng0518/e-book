@@ -40,13 +40,44 @@ Docker社区早就注意到了这个问题，并通过重新定义 v2.2 Image sp
 自从Docker registry v2.3和Docker 1.10开始，Docker通过支持新的image Media 类型 manifest list 实现了Multi architecture Docker镜像功能：
 
 1. 一个image manifest list 包含指向已经存在镜像的manifest对象列表
+
 ![docker_image_manifest_list.png](https://raw.githubusercontent.com/liupeng0518/e-book/master/docker/.images/docker_image_manifest_list.png)
 
 2. 一个image manifest list包含已经存在镜像的manifest对象的平台特性（CPU arch和OS类型）特征
-![docker_image_manifest_os.png](https://raw.githubusercontent.com/liupeng0518/e-book/master/docker/.images/docker_image_manifest_os.png)
 
-根据manifest list对象定义，我们可以通过下面的流程了解Docker是如何支持Multi architecture Docker镜像的：
-![docker_image_manifest_流程图.png](https://raw.githubusercontent.com/liupeng0518/e-book/master/docker/.images/docker_image_manifest_流程图.png)
+```
+         "platform": {
+            "architecture": "amd64",
+            "os": "linux"
+         }
+```
+
+1. 根据manifest list对象定义，我们可以通过下面的流程了解Docker是如何支持Multi architecture Docker镜像
+
+```flow
+st=>start: 开始
+e=>end
+op1=>operation: pull 镜像
+op2=>operation: pull target镜像
+op3=>operation: old case
+sub1=>subroutine: My Subroutine
+cond1=>condition: registry返回
+是否支持多muitiarch的
+manifest list对象
+
+cond2=>condition: 匹配到对应镜像
+io=>inputoutput: docker engine根据client运行环境，
+遍历查找符合CPU arch和
+OS的manifest对象
+
+
+st->op1->cond1
+cond1(yes)->io->cond2(yes)->op2->e
+cond1(no)->op3->cond2
+cond2(no)->e
+
+```
+
 
 # 实践
 ## 准备
