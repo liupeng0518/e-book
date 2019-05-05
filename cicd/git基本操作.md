@@ -19,3 +19,14 @@ git强制覆盖本地命令（单条执行）：
 git fetch --all && git reset --hard origin/master && git pull
 
 ```
+
+# fork分支更新
+
+```
+git remote -v 
+git remote add upstream git@github.com:xxx/xxx.git
+git fetch upstream
+git merge upstream/master
+git push 
+
+```
