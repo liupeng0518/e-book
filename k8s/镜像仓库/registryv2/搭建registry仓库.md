@@ -1,7 +1,7 @@
 ---
 title: 搭建registry仓库
 date: 2018-12-24 09:47:19
-categories: k8s
+categories: docker
 tags: [docker, registry]
 
 ---
