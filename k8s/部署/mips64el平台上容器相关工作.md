@@ -11,6 +11,15 @@ tags: [k8s, mips64el]
 [源码编译1.14.1](http://liupeng0518.github.io/2019/05/15/k8s/%E9%83%A8%E7%BD%B2/%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/)
 
 目前已经将编译的二进制和镜像上传到docker hub。
+```
+liupeng0518/kube-controller-manager-mips64el:v1.14.1
+liupeng0518/kube-scheduler-mips64el:v1.14.1
+liupeng0518/kube-apiserver-mips64el:v1.14.1
+liupeng0518/kube-proxy-mips64el:v1.14.1
+
+liupeng0518/debian-iptables-mips64el:v11.0.2
+liupeng0518/debian-base-mips64el:v1.0.0
+```
 
 # debian镜像
 
@@ -80,3 +89,19 @@ Linux d965f169ec9a 3.10.0-514.el7.x86_64 #1 SMP Tue Nov 22 16:42:41 UTC 2016 mip
 
 # 构建misp64el k8s核心组件镜像
 
+
+# mips64el gosu
+
+https://github.com/liupeng0518/gosu/releases/tag/1.11
+
+# 中间件
+```
+liupeng0518/java-centos-openjdk8-jre
+liupeng0518/centos7-mips-base
+liupeng0518/redis-mips64el:4.0.11-stretch
+liupeng0518/redis-mips64el:4.0.14-stretch
+liupeng0518/zookeeper-mips64el:3.4.14
+
+docker.io/liupeng0518/debian-debootstrap:mips64el-stretch
+docker.io/liupeng0518/debian-debootstrap:mips64el-sid
+```
