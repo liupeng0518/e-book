@@ -88,6 +88,15 @@ Linux d965f169ec9a 3.10.0-514.el7.x86_64 #1 SMP Tue Nov 22 16:42:41 UTC 2016 mip
 [qemu arch列表查看](https://www.archlinux.org/packages/extra/x86_64/qemu-arch-extra/files/)
 
 # 构建misp64el k8s核心组件镜像
+```
+liupeng0518/kube-controller-manager-mips64el:v1.14.1
+liupeng0518/kube-scheduler-mips64el:v1.14.1
+liupeng0518/kube-apiserver-mips64el:v1.14.1
+liupeng0518/kube-proxy-mips64el:v1.14.1
+
+liupeng0518/debian-iptables-mips64el:v11.0.2
+liupeng0518/debian-base-mips64el:v1.0.0
+```
 
 
 # mips64el gosu
