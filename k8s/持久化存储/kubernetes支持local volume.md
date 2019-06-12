@@ -5,9 +5,11 @@ categories: k8s
 tags: [k8s, PersistentVolume,local volume]
 
 ---
-转载: https://ieevee.com/tech/2019/01/17/local-volume.html
 
 # local volume
+Local Persistent Volume是用来做什么?
+
+可以实现pod在本地的持久化存储, 而不需要依赖远程存储服务来提供持久化 , 即使这个pod再次被调度的时候 , 也能被再次调度到local pv所在的node。
 
 kubernetes从1.10版本开始支持local volume（本地卷），workload（不仅是statefulsets类型）可以充分利用本地快速SSD，从而获取比remote volume（如cephfs、RBD）更好的性能。
 
@@ -18,6 +20,12 @@ kubernetes从1.10版本开始支持local volume（本地卷），workload（不�
 数据缓存，应用可以就近访问数据，快速处理。
 分布式存储系统，如分布式数据库Cassandra ，分布式文件系统ceph/gluster
 下面会先以手动方式创建PV、PVC、Pod的方式，介绍如何使用local volume，然后再介绍external storage提供的半自动方式，最后介绍社区的一些发展。
+
+# Local Persistent Volume需要注意的地方是什么?
+- 一旦节点宕机 , 在上面的数据就会丢失 , 这需要使用Local Persistent Volume的应用要有数据恢复和备份能力
+
+- Local Persistent Volume对应的存储介质, 一定是一块额外挂载在 宿主机的磁盘或者块设备(意思是它不应用是宿主机根目录所使用的主硬盘 , ) 一定要一个PV一个盘 , 而且要提前准备好
+
 
 # 创建一个storage class
 
@@ -31,9 +39,10 @@ provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer
 ```
 
-sc的provisioner是 kubernetes.io/no-provisioner。
+provisioner是kubernetes.io/no-provisioner
 
 WaitForFirstConsumer表示PV不要立即绑定PVC，而是直到有Pod需要用PVC的时候才绑定。调度器会在调度时综合考虑选择合适的local PV，这样就不会导致跟Pod资源设置，selectors，affinity and anti-affinity策略等产生冲突。很明显：如果PVC先跟local PV绑定了，由于local PV是跟node绑定的，这样selectors，affinity等等就基本没用了，所以更好的做法是先根据调度策略选择node，然后再绑定local PV。
+其实WaitForFirstConsumer又2种: 一种是WaitForFirstConsumer , 一直是Immediate , 这里必须用延迟绑定模式
 
 # 静态创建PV
 
@@ -42,16 +51,17 @@ WaitForFirstConsumer表示PV不要立即绑定PVC，而是直到有Pod需要用P
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: example-local-pv
+  name: example-pv
 spec:
   capacity:
     storage: 5Gi
+  volumeMode: Filesystem
   accessModes:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: local-volume
+  storageClassName: local-storage
   local:
-    path: /data/local/vol1
+    path: /mnt/disks/vol1 
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -59,66 +69,86 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - ubuntu-1
+          - 192.168.122.234
 ```
 Retain（保留）是指，PV跟PVC释放后，管理员需要手工清理，重新设置该卷。
 
-需要指定PV对应的sc；目录/data/local/vol1也需要创建。
-```
-kubectl get pv example-local-pv
-NAME               CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   REASON   AGE
-example-local-pv   5Gi        RWO            Retain           Available           local-volume            8d
-```
+local.path写对应的磁盘路径
+
+必须指定对应的node , 用.spec.nodeAffinity 来对应的node
+
+.spec.volumeMode可以是FileSystem（Default）和Block
+
+
 # 使用local volume PV
 接下来创建一个关联 sc:local-volume的PVC，然后将该PVC挂到nginx容器里。
 ```
-apiVersion: v1
 kind: PersistentVolumeClaim
+apiVersion: v1
 metadata:
-  name: myclaim
+  name: example-local-claim
 spec:
   accessModes:
   - ReadWriteOnce
   resources:
     requests:
       storage: 5Gi
-  storageClassName: local-volume
----
+  storageClassName: local-storage
+```
+创建对应的pod
+
+```
 kind: Pod
 apiVersion: v1
 metadata:
-  name: mypod
+  name: example-pv-pod
 spec:
-  containers:
-    - name: myfrontend
-      image: nginx
-      volumeMounts:
-      - mountPath: "/usr/share/nginx/html"
-        name: mypd
   volumes:
-    - name: mypd
+    - name: example-pv-storage
       persistentVolumeClaim:
-        claimName: myclaim
+       claimName: example-local-claim
+  containers:
+    - name: example-pv-container
+      image: nginx
+      ports:
+        - containerPort: 80
+          name: "http-server"
+      volumeMounts:
+        - mountPath: "/usr/share/nginx/html"
+          name: example-pv-storage
+
 ```
 
-进入到容器里，会看到挂载的目录，大小其实就是上面创建的PV所在磁盘的size。
+在宿主机/mnt/disks/vol1 或容器里挂载路径/usr/share/nginx/html目录下创建一个index.html文件：
 ```
-/dev/sdb         503G  235M  478G   1% /usr/share/nginx/html
-```
-在宿主机的/data/local/vol1目录下创建一个index.html文件：
-```
-echo "hello world" > /data/local/vol1/index.html
+echo "hello world" > /mnt/disks/vol1/index.html
 ```
 然后再去curl容器的IP地址，就可以得到刚写入的字符串了。
 
 删除Pod/PVC，之后PV状态改为Released，该PV不会再被绑定PVC了。
 
 # 动态创建PV
-手工管理local PV显然是很费劲的，社区提供了external storage可以动态的创建PV（实际仍然不够自动化）。
+手工管理local PV显然是很费劲的，社区提供了[external storage](https://github.com/kubernetes-incubator/external-storage/blob)可以动态的创建PV（实际仍然不够自动化）。
 
-local volume provisioner的官方编排在local-volume/provisioner/deployment/kubernetes/example/default_example_provisioner_generated.yaml目录里，不过官方文档一会fast-disk，一会local-storage，有点混乱。我这里统一都用local-volume。
+[local volume provisioner](https://github.com/kubernetes-incubator/external-storage/blob/master/local-volume/provisioner/deployment/kubernetes/example/default_example_provisioner_generated.yaml)
+
+目前已经迁移到：https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner
+
+按照社区来看：
+
+```
+1.14: GA
+No new features added
+1.12: Beta
+Added support for automatically formatting a filesystem on the given block device in localVolumeSource.path
+
+```
+1.14已经GA，1.12已经支持自动格式化文件系统
+
 ```
 ---
+# Source: provisioner/templates/provisioner.yaml
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -126,9 +156,9 @@ metadata:
   namespace: default
 data:
   storageClassMap: |
-    local-volume:
-       hostDir: /data/local
-       mountDir:  /data/local
+    fast-disks:
+       hostDir: /mnt/fast-disks
+       mountDir:  /mnt/fast-disks
        blockCleanerCommand:
          - "/scripts/shred.sh"
          - "2"
@@ -151,9 +181,9 @@ spec:
       labels:
         app: local-volume-provisioner
     spec:
-      serviceAccountName: local-volume-admin
+      serviceAccountName: local-storage-admin
       containers:
-        - image: "silenceshell/local-volume-provisioner:v2.1.0"
+        - image: "quay.io/external_storage/local-volume-provisioner:v2.1.0"
           imagePullPolicy: "Always"
           name: provisioner
           securityContext:
@@ -167,31 +197,37 @@ spec:
             - mountPath: /etc/provisioner/config
               name: provisioner-config
               readOnly: true
-            - mountPath:  /data/local
-              name: local
+            - mountPath:  /mnt/fast-disks
+              name: fast-disks
               mountPropagation: "HostToContainer"
       volumes:
         - name: provisioner-config
           configMap:
             name: local-provisioner-config
-        - name: local
+        - name: fast-disks
           hostPath:
-            path: /data/local
+            path: /mnt/fast-disks
+
 ---
+# Source: provisioner/templates/provisioner-service-account.yaml
+
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: local-volume-admin
+  name: local-storage-admin
   namespace: default
+
 ---
+# Source: provisioner/templates/provisioner-cluster-role-binding.yaml
+
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: local-volume-provisioner-pv-binding
+  name: local-storage-provisioner-pv-binding
   namespace: default
 subjects:
 - kind: ServiceAccount
-  name: local-volume-admin
+  name: local-storage-admin
   namespace: default
 roleRef:
   kind: ClusterRole
@@ -201,7 +237,7 @@ roleRef:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: local-volume-provisioner-node-clusterrole
+  name: local-storage-provisioner-node-clusterrole
   namespace: default
 rules:
 - apiGroups: [""]
@@ -211,15 +247,15 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: local-volume-provisioner-node-binding
+  name: local-storage-provisioner-node-binding
   namespace: default
 subjects:
 - kind: ServiceAccount
-  name: local-volume-admin
+  name: local-storage-admin
   namespace: default
 roleRef:
   kind: ClusterRole
-  name: local-volume-provisioner-node-clusterrole
+  name: local-storage-provisioner-node-clusterrole
   apiGroup: rbac.authorization.k8s.io
 ```
 

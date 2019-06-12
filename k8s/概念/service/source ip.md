@@ -53,4 +53,7 @@ client 访问node2:nodePort，由于没有对应的endpoint，会直接丢弃
 
 其他的可以参考官方文档
 
-参考: https://kubernetes.io/docs/tutorials/services/source-ip/
+参考: 
+https://blog.csdn.net/cloudvtech/article/details/79927444
+
+https://kubernetes.io/docs/tutorials/services/source-ip/

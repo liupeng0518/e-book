@@ -1,3 +1,11 @@
+---
+title: influxdb使用
+date: 2019-1-18 09:47:19
+categories: influxdb
+tags: [linux, influxdb]
+
+---
+
 # influxdb安装及配置
 
 ## 安装
