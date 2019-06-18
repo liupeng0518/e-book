@@ -1,3 +1,11 @@
+---
+title: kubectl插件机制
+date: 2019-6-18 17:13:01
+categories: k8s
+tags: [k8s, krew]
+
+---
+
 kubectl plugin机制在Kubernetes 1.14 进入GA状态。
 
 https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/
