@@ -130,3 +130,15 @@ dockerd启动时，参数--iptables默认为true，表示允许修改iptables路
 - 设置启动参数--iptables=false
 - 修改配置文件/etc/docker/daemon.json，设置"iptables": "false"；然后执行systemctl reload docker重新加载
 
+## 为什么docker创建的网络命名空间在ip netns 不可见
+
+创建docker容器后本来应该有新的命名空间（如果有独立网络的话），那么可以通过 ip netns 命令查看到命名空间，但是实际上却看不到。
+
+因为，ip netns 只能查看到 /var/run/netns 下面的网络命名空间。docker 不像openstack  neutron 会自动在这个文件创建命名空间名字，如果需要的话，我们可以手动创建。
+
+创建方法:
+
+```
+pid=`docker inspect -f '{{.State.Pid}}' $container_id`
+ln -s /proc/$pid/ns/net /var/run/netns/$container_id
+```
