@@ -1,4 +1,10 @@
-pip 相关操作
+---
+title: pip 相关操作
+
+date: 2019-06-13T17:20:00+08:00
+tags: [Linux,pip]
+---
+
 
 # 国内源
 linux下, 修改 ~/.pip/pip.conf. 内容如下：
