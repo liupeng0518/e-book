@@ -10,9 +10,8 @@ tags: [Linux,pip]
 linux下, 修改 ~/.pip/pip.conf. 内容如下：
 ```
 [global]
-index-url = https://pypi.tuna.tsinghua.edu.cn/simple
-[install]
-trusted-host=mirrors.aliyun.com
+trusted-host =  mirrors.aliyun.com
+index-url = https://mirrors.aliyun.com/pypi/simple
 ```
 
 # freeze
