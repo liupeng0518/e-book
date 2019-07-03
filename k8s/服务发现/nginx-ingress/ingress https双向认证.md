@@ -67,7 +67,7 @@ $ openssl req -x509 -sha256 -newkey rsa:4096 -keyout ca.key -out ca.crt -days 35
 
 # 生成服务器密钥，证书并使用CA证书签名
 $ openssl req -new -newkey rsa:4096 -keyout server.key -out server.csr -nodes -subj '/CN=meow.com'
-$ openssl x509 -req -sha256 -days 365 -in server.csr -CA ca.crt -CAkey ca.key -set_serial 01 -out server.crt
+$   
 
 # 生成客户端密钥，证书并使用CA证书签名
 $ openssl req -new -newkey rsa:4096 -keyout client.key -out client.csr -nodes -subj '/CN=Fern'

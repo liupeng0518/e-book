@@ -109,3 +109,4 @@ server {
 ```
 $ sudo ln -s /var/spool/pypi-mirror /var/www/html/pypi
 ```
+error: 新版的pip可能出现识别"_"和"-"的问题, 可以手动修改dir2pi创建的xml解决。
