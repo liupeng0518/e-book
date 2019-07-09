@@ -12,6 +12,7 @@ linux下, 修改 ~/.pip/pip.conf. 内容如下：
 [global]
 trusted-host =  mirrors.aliyun.com
 index-url = https://mirrors.aliyun.com/pypi/simple
+
 ```
 
 # freeze
