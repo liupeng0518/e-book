@@ -31,11 +31,13 @@ done
 
 # 提交博客
 cd ${BLOG}
+rm -rf node_modules/
 npm cache clean --force
 npm install hexo-filter-mermaid-diagrams --save
 npm install --save hexo-filter-flowchart
 npm install hexo-deployer-git --save
-rm -rf node_modules/ && npm install
+
+npm install
 
 hexo g
 
