@@ -192,3 +192,5 @@ docker start mariadb
 
 
 恢复完成之后在修改为原始状态即可. 
+
+workaround:

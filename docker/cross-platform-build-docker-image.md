@@ -1,7 +1,7 @@
 ---
 title: 跨平台构建 Docker 镜像
 date: 2018-06-13
-tags: [Linux,Docker]
+tags: [Linux, docker]
 ---
 
 随着 IoT 的发展 ARM 平台变得越来越重要，[HypriotOS](https://blog.hypriot.com/) 和 [resinOS](https://resin.io/) 可以轻松的在 ARM 设备上运行 Docker，部署各种好玩的应用，而不用在意各种系统的差异，在未来，容器技术将从服务器走近用户。
