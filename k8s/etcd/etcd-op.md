@@ -1,7 +1,7 @@
 ---
 title: etcd 运维操作
-date: 2019-07-07 09:47:19
-categories: openstack
+date: 2019-07-27 09:47:19
+categories: k8s
 tags: [k8s, etcd]
 
 ---
