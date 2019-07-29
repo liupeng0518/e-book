@@ -87,59 +87,17 @@ ETCDCTL_API=3 etcdctl --endpoints https://10.7.12.181:2379 --cacert=/etc/ssl/etc
             "mod_revision": 153,
             "value": "azhzAAoPCgJ2MRIJTmFtZXNwYWNlEl8KRQoHZGVmYXVsdBIAGgAiACokN2I2YjJiY2EtYWNmNC0xMWU5LTk2NDctMDAwYzI5MTgyNDlkMgA4AEIICLXr2ekFEAB6ABIMCgprdWJlcm5ldGVzGggKBkFjdGl2ZRoAIgA=",
             "version": 1
-        },
-        {
-            "create_revision": 1048,
-            "key": "L3JlZ2lzdHJ5L25hbWVzcGFjZXMvaW5ncmVzcy1uZ2lueA==",
-            "mod_revision": 1048,
-            "value": "azhzAAoPCgJ2MRIJTmFtZXNwYWNlErICCpcCCg1pbmdyZXNzLW5naW54EgAaACIAKiRiZDVhMDQ0OC1hY2Y0LTExZTktOTY0Ny0wMDBjMjkxODI0OWQyADgAQggIpOzZ6QUQAFoVCgRuYW1lEg1pbmdyZXNzLW5naW54YrIBCjBrdWJlY3RsLmt1YmVybmV0ZXMuaW8vbGFzdC1hcHBsaWVkLWNvbmZpZ3VyYXRpb24SfnsiYXBpVmVyc2lvbiI6InYxIiwia2luZCI6Ik5hbWVzcGFjZSIsIm1ldGFkYXRhIjp7ImFubm90YXRpb25zIjp7fSwibGFiZWxzIjp7Im5hbWUiOiJpbmdyZXNzLW5naW54In0sIm5hbWUiOiJpbmdyZXNzLW5naW54In19CnoAEgwKCmt1YmVybmV0ZXMaCAoGQWN0aXZlGgAiAA==",
-            "version": 1
-        },
-        {
-            "create_revision": 280110,
-            "key": "L3JlZ2lzdHJ5L25hbWVzcGFjZXMvaXN0aW8tc3lzdGVt",
-            "mod_revision": 280110,
-            "value": "azhzAAoPCgJ2MRIJTmFtZXNwYWNlEnoKYAoMaXN0aW8tc3lzdGVtEgAaACIAKiQwMTM5NjJhZC1hZGVmLTExZTktOTY0Ny0wMDBjMjkxODI0OWQyADgAQggIhLTg6QUQAFoUCgRuYW1lEgxpc3Rpby1zeXN0ZW16ABIMCgprdWJlcm5ldGVzGggKBkFjdGl2ZRoAIgA=",
-            "version": 1
-        },
-        {
-            "create_revision": 39,
-            "key": "L3JlZ2lzdHJ5L25hbWVzcGFjZXMva3ViZS1ub2RlLWxlYXNl",
-            "mod_revision": 39,
-            "value": "azhzAAoPCgJ2MRIJTmFtZXNwYWNlEmcKTQoPa3ViZS1ub2RlLWxlYXNlEgAaACIAKiQ3OTc0NGU0MC1hY2Y0LTExZTktOTY0Ny0wMDBjMjkxODI0OWQyADgAQggIsuvZ6QUQAHoAEgwKCmt1YmVybmV0ZXMaCAoGQWN0aXZlGgAiAA==",
-            "version": 1
-        },
-        {
-            "create_revision": 36,
-            "key": "L3JlZ2lzdHJ5L25hbWVzcGFjZXMva3ViZS1wdWJsaWM=",
-            "mod_revision": 36,
-            "value": "azhzAAoPCgJ2MRIJTmFtZXNwYWNlEmMKSQoLa3ViZS1wdWJsaWMSABoAIgAqJDc5NzI5NDk2LWFjZjQtMTFlOS05NjQ3LTAwMGMyOTE4MjQ5ZDIAOABCCAiy69npBRAAegASDAoKa3ViZXJuZXRlcxoICgZBY3RpdmUaACIA",
-            "version": 1
-        },
-        {
-            "create_revision": 27,
-            "key": "L3JlZ2lzdHJ5L25hbWVzcGFjZXMva3ViZS1zeXN0ZW0=",
-            "mod_revision": 1555,
-            "value": "azhzAAoPCgJ2MRIJTmFtZXNwYWNlEvUBCtoBCgtrdWJlLXN5c3RlbRIAGgAiACokNzk3MDFhN2MtYWNmNC0xMWU5LTk2NDctMDAwYzI5MTgyNDlkMgA4AEIICLLr2ekFEABijgEKMGt1YmVjdGwua3ViZXJuZXRlcy5pby9sYXN0LWFwcGxpZWQtY29uZmlndXJhdGlvbhJaeyJhcGlWZXJzaW9uIjoidjEiLCJraW5kIjoiTmFtZXNwYWNlIiwibWV0YWRhdGEiOnsiYW5ub3RhdGlvbnMiOnt9LCJuYW1lIjoia3ViZS1zeXN0ZW0ifX0KegASDAoKa3ViZXJuZXRlcxoICgZBY3RpdmUaACIA",
-            "version": 3
-        },
-        {
-            "create_revision": 1276,
-            "key": "L3JlZ2lzdHJ5L25hbWVzcGFjZXMvbG9jYWwtcGF0aC1zdG9yYWdl",
-            "mod_revision": 1276,
-            "value": "azhzAAoPCgJ2MRIJTmFtZXNwYWNlEoMCCugBChJsb2NhbC1wYXRoLXN0b3JhZ2USABoAIgAqJGM4NDc1OGU3LWFjZjQtMTFlOS05NjQ3LTAwMGMyOTE4MjQ5ZDIAOABCCAi27NnpBRAAYpUBCjBrdWJlY3RsLmt1YmVybmV0ZXMuaW8vbGFzdC1hcHBsaWVkLWNvbmZpZ3VyYXRpb24SYXsiYXBpVmVyc2lvbiI6InYxIiwia2luZCI6Ik5hbWVzcGFjZSIsIm1ldGFkYXRhIjp7ImFubm90YXRpb25zIjp7fSwibmFtZSI6ImxvY2FsLXBhdGgtc3RvcmFnZSJ9fQp6ABIMCgprdWJlcm5ldGVzGggKBkFjdGl2ZRoAIgA=",
-            "version": 1
-        },
-        {
-            "create_revision": 53199,
-            "key": "L3JlZ2lzdHJ5L25hbWVzcGFjZXMvbW9uaXRvcmluZw==",
-            "mod_revision": 53199,
-            "value": "azhzAAoPCgJ2MRIJTmFtZXNwYWNlEvMBCtgBCgptb25pdG9yaW5nEgAaACIAKiQ2Zjc0MDZhZS1hZDIxLTExZTktYmQ1Zi0wMDBjMjliNzM5NGYyADgAQggIoILb6QUQAGKNAQowa3ViZWN0bC5rdWJlcm5ldGVzLmlvL2xhc3QtYXBwbGllZC1jb25maWd1cmF0aW9uEll7ImFwaVZlcnNpb24iOiJ2MSIsImtpbmQiOiJOYW1lc3BhY2UiLCJtZXRhZGF0YSI6eyJhbm5vdGF0aW9ucyI6e30sIm5hbWUiOiJtb25pdG9yaW5nIn19CnoAEgwKCmt1YmVybmV0ZXMaCAoGQWN0aXZlGgAiAA==",
-            "version": 1
         }
+        ... ...
     ]
 }
 
+```
+
+查看实际数据:
+
+```
+echo L3JlZ2lzdHJ5L25hbWVzcGFjZXMvY2VydC1tYW5hZ2Vy|base64 -d
 ```
 
 ## 查看k8s元数据

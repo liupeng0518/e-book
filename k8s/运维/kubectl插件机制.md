@@ -12,7 +12,7 @@ https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/
 
 包管理工具: [krew](https://github.com/kubernetes-sigs/krew)
 
-# 安装:
+# 安装
 
 1. Make sure that git is installed.
 
