@@ -1,13 +1,13 @@
 ---
 title: docker device or resource busy
-date: 2018-06-13
+date: 2018-08-10
 tags: [linux, docker]
 ---
 
 
 当我们在使用低版本的docker时，删除container出现device or resource busy
 
-``
+```
 [root@k8s1 ~]# docker rm -f etcd1
 Error response from daemon: Driver overlay2 failed to remove root filesystem ca74eaa1b342c64a7f6c558299bedf74a5b7016c194e885bf290281161605d58: remove /var/lib/docker/overlay2/1a90250c2b5b00295a8efce60142aebcf2f30cfa1d5ec7c029e250c5a3a90951/merged: device or resource busy
 ```
