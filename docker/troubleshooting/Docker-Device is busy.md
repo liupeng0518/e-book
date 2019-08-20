@@ -1,6 +1,6 @@
 ---
 title: docker device or resource busy
-date: 2018-08-10
+date: 2019-08-10
 tags: [linux, docker]
 ---
 
@@ -63,7 +63,7 @@ etcd1
 
 
 
-# 根因
+## 根因
 
 查看httpd服务的unit
 ```
@@ -103,7 +103,7 @@ WantedBy=multi-user.target
 
 
 
-参考：
+## 参考
 
 https://blog.terminus.io/docker-device-is-busy/
 
