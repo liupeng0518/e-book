@@ -1,8 +1,9 @@
 
 ---
-title: docker: device or resource busy
+title: docker device or resource busy
 date: 2019-08-10
-tags: [Linux, docker]
+tags: [linux, docker]
+
 ---
 
 当我们在使用低版本的docker时，删除container出现device or resource busy
