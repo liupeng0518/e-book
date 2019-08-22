@@ -24,8 +24,7 @@ HPA对您的服务进行了两项直接改进：
 HPA会根据获取到的CPU/内存利用率（resource metrics）或基于第三metrics采集工具（Prometheus, Datadog等）提供的自定义指标自动调整replication controller, deployment 或 replica set中的容器数（自定义的最小和最大容量数）普罗米修斯，Datadog等。
 HPA实现方式是control loop，其周期由Kubernetes controller manager控制，要使用HPA，那么在启动时需要添加 --horizo​​ntal-pod-autoscaler-sync-period（默认值30s）。
 
-![HPA schema](../.images/horizontal-pod-autoscaler.svg)
-
+![HPA schema](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/horizontal-pod-autoscaler.svg)
 # 定义 HPA
 HPA是Kubernetes autoscaling API组中的API资源。当前的稳定版本是autoscaling/v1，它仅包括对CPU自动缩放的支持。
 要获得对内存和自定义指标扩展的额外支持，它包含在autoscaling/v2beta1和autoscaling/v2beta2中。

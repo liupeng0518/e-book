@@ -9,9 +9,9 @@ date: 2018-12-29 09:47:19
 这里有几种方式：
 
  - hostNetwork
- - hostPort   
- - NodePort   
- - LoadBalancer   
+ - hostPort
+ - NodePort
+ - LoadBalancer
  - Ingress
 
 说是暴露Pod其实跟暴露Service是一回事，因为Pod就是Service的backend。
