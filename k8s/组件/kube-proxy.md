@@ -57,7 +57,7 @@ Kube-proxy还可以作为Service's Pod的负载均衡器。它可以通过一组
 
 要在netfilter中设置网络路由规则，kube-proxy使用名为[iptables](https://wiki.archlinux.org/index.php/iptables)的 userspace 程序。该程序可以检查，转发，修改，重定向和丢弃IP数据包。 Iptables包含五个表：raw，filter，nat，mangle和security，用于在网络传输的各个阶段配置数据包。这里，iptables的每个表都有一组chains - 是按顺序遵循规则的列表。例如，filter 表由INPUT，OUTPUT和FORWARD链组成。当数据包到达filter表时，它首先由INPUT链处理。
 
-每个链都是由包含由条件和满足条件时要采取的相应操作单独规则组成。以下是设置iptables规则的示例，该规则是在filter表的INPUT链中，设置不允许的指定的IP(15.15.15.51)的连接。 
+每个链都是由包含由条件和满足条件时要采取的相应操作单独规则组成。以下是设置iptables规则的示例，该规则是在filter表的INPUT链中，设置不允许指定IP(15.15.15.51)连接。 
 ```
 sudo iptables -A INPUT -s 15.15.15.51 -j DROP
 ```
@@ -70,12 +70,37 @@ sudo iptables -A INPUT -s 15.15.15.51 -j DROP
 
 然而，配置路由规则是不够的。 
 
-IP地址在像Kubernetes这样的容器化环境中经常变动。因此，kube-proxy必须监听 Kubernetes API的变动，例如创建或更新Service，添加或删除后端Pods IP以及相应地更改iptables规则，以便使得来自虚拟IP的路由始终转到正确的Pod。将VIP转换为真实Pod IP的过程的细节根据所选的kube-proxy模式而不同。接下来我们现在讨论这些模式。
+在Kubernetes这样的容器化环境中IP地址是需要经常变动的。因此，kube-proxy必须监听 Kubernetes API的变动，例如创建或更新Service，添加或删除后端Pods IP以及相应地更改iptables规则，以便使得来自虚拟IP的路由始终转到正确的Pod。将VIP转换为真实Pod IP的过程的细节根据所选的kube-proxy模式而不同。接下来我们现在讨论这些模式。
 
 # Kube-proxy modes
+Kube-proxy可以在三种不同的模式下工作：
+- userspace 
+- iptables
+- IPVS
+为什么我们需要这些模式?这些模式的区别在于kube-proxy代理如何与Linux用户空间和内核空间交互，**以及这些空间在数据包路由和Service** backends流量的负载平衡方面扮演什么角色。为了使讨论更加清晰，您应该理解用户空间和内核空间之间的区别。
 
 
-参考:
+# Userspace vs. Kernelspace
+在Linux中，系统内存可以分为两个不同的区域:内核空间和用户空间。
+
+
+
+内核是操作系统的核心，它负责执行命令并在内核空间中提供操作系统服务。用户安装的所有用户软件和进程都在用户空间中运行。当它们需要CPU进行计算、磁盘进行I/O操作或派生进程时，它们会向内核发送系统调用，请求内核提供服务。
+
+
+通常，内核空间模块和进程要比用户空间的进程快得多，因为它们直接与系统硬件交互。因为用户空间程序需要访问内核服务，所以它们的速度要慢得多。
+
+![](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/user-space-vs-kernel-space-simple-user-space.png)
+
+来源：https://www.redhat.com/en/blog/architecting-containers-part-1-why-understanding-user-space-vs-kernel-space-matters
+
+现在，我们了解了用户空间与内核空间的含义，我们接下来讨论kube-proxy的工作模式。
+
+# Userspace Proxy Mode
+
+
+
+# 参考:
 
 官方文档: https://kubernetes.io/zh/docs/reference/command-line-tools-reference/kube-proxy/
 原文: https://supergiant.io/blog/understanding-kubernetes-kube-proxy/
