@@ -30,7 +30,7 @@ A tunneling proxy passes unmodified requests from clients to servers on some net
 
 A forward proxy is an Internet-facing proxy that mediates client connections to web resources/servers on the Internet. It manages outgoing connections and can service a wide range of resource types.
 # Kube-proxy
-Kube-proxy在其概念和设计中最接近反向代理模型（至少在用户空间模式中，稍后我们会讲到）。
+Kube-proxy在其概念和设计中最接近反向代理模型（至少在userspace模式中，稍后我们会讲到）。
 作为反向代理，kube-proxy负责监控（watching）客户端对某些 IP:port 的请求，并将它们转发/代理（forwarding/proxying）到专有网络上的相应服务/应用程序。 但是，kube-proxy和普通反向代理之间的区别在于，kube-proxy代理的请求是指向Kubernetes Services及其后端Pod而不是宿主机。 我们一会将会讨论一些其他重要的差异。
 
 因此，正如刚才所说，kube-proxy代理的是客户端的请求到后端由Services管理的Pod。 其主要任务是将Services的virtual IP转换为由Services控制的后端Pod的IP。 这样，访问Services的客户端就不需要知道哪些Pod对该Services可用。
@@ -77,26 +77,151 @@ Kube-proxy可以在三种不同的模式下工作：
 - userspace 
 - iptables
 - IPVS
-为什么我们需要这些模式?这些模式的区别在于kube-proxy代理如何与Linux用户空间和内核空间交互，**以及这些空间在数据包路由和Service** backends流量的负载平衡方面扮演什么角色。为了使讨论更加清晰，您应该理解用户空间和内核空间之间的区别。
+为什么我们需要这些模式?这些模式的区别在于kube-proxy代理如何与Linux userspace和内核空间交互，**以及这些空间在数据包路由和Service** backends流量的负载平衡方面扮演什么角色。为了使讨论更加清晰，您应该理解userspace和内核空间之间的区别。
 
 
 # Userspace vs. Kernelspace
-在Linux中，系统内存可以分为两个不同的区域:内核空间和用户空间。
+在Linux中，系统内存可以分为两个不同的区域:kernelspace和userspace。
 
 
 
-内核是操作系统的核心，它负责执行命令并在内核空间中提供操作系统服务。用户安装的所有用户软件和进程都在用户空间中运行。当它们需要CPU进行计算、磁盘进行I/O操作或派生进程时，它们会向内核发送系统调用，请求内核提供服务。
+内核是操作系统的核心，它负责执行命令并在内核空间中提供操作系统服务。用户安装的所有用户软件和进程都在userspace中运行。当它们需要CPU进行计算、磁盘进行I/O操作或派生进程时，它们会向内核发送系统调用，请求内核提供服务。
 
 
-通常，内核空间模块和进程要比用户空间的进程快得多，因为它们直接与系统硬件交互。因为用户空间程序需要访问内核服务，所以它们的速度要慢得多。
+通常，内核空间模块和进程要比userspace的进程快得多，因为它们直接与系统硬件交互。因为userspace程序需要访问内核服务，所以它们的速度要慢得多。
 
 ![](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/user-space-vs-kernel-space-simple-user-space.png)
 
 来源：https://www.redhat.com/en/blog/architecting-containers-part-1-why-understanding-user-space-vs-kernel-space-matters
 
-现在，我们了解了用户空间与内核空间的含义，我们接下来讨论kube-proxy的工作模式。
+现在，我们了解了userspace与内核空间的含义，我们接下来讨论kube-proxy的工作模式。
 
 # Userspace Proxy Mode
+
+在Userspace模式中，大多数网络任务（包括配置数据包规则和负载均衡）由在userspace中运行的kube-proxy直接执行。在此模式下，kube-proxy最接近反向代理的模式，该模式涉及流量的侦听、路由以及目标之间的负载均衡。此外，在Userspace模式下，当与iptables交互并进行配置负载均衡时，kube-proxy必须经常在userspace和内核空间之间切换上下文。
+
+
+
+在userspace模式下在VIP和后端Pod之间代理流量分四步完成：
+
+- kube-proxy监听 Services 及 Endpoints (后端pod)的创建/删除。
+- 当创建一个ClusterIP类型的新服务时，kube-proxy会在节点上打开一个随机端口。其目的是将此端口的任何连接代理到服务的后端Endpoints之一。后端Pod的选择基于Service 的SessionAffinity 。
+- kube-proxy配置iptables规则，拦截到服务的VIP和服务端口的流量，并将这些流量重定向到上面步骤中打开的主机端口。
+- 当重定向的流量到达节点的端口时，kube-proxy充当一个负载均衡器，在后端pod之间分配流量。后端Pod的选择策略默认为 round robin。
+
+
+如您所见，在此模式下，kube-proxy是工作在userspace的代理，用于打开代理端口，侦听代理端口，并将数据包从端口重定向到后端Pod。
+
+
+
+然而，这种方法涉及到很多上下文切换。
+
+当VIP重定向到代理端口时，kube-proxy必须切换到kernelspace，然后返回到userspace，以便在一组后端数据包之间实现负载均衡。这是因为它不会配置用于 Service endpoints/backends 之间的负载平衡的iptables规则。因此，负载均衡直接由userspace中的kube-proxy完成。由于频繁的上下文切换，userspace 模式不会像其他两种模式那样快速和具有可伸缩。
+
+![](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/kube-proxy-usermode-2.png)
+
+# Example #1: Userspacemode
+
+让我们用上图中的一个例子来说明userspace 模式是如何工作的。在这里，kube-proxy在创建了一个service 其clusterip 10.104.141.67，在节点的eth0接口上打开一个随机端口（10400）。
+
+然后，kube-proxy创建netfilter规则，将发送到service vip的数据包重新路由到proxy端口。在数据包到达这个端口后，kube proxy选择一个后端pods（例如，pod 1）并将流量转发给它。正如您所能想象的，在这个过程中涉及到许多中间步骤。
+
+
+# Iptables Mode
+iptables是自kubernetes v1.2以来的默认kube代理模式，与userspace模式相比，它会更快的解析 Services 和 backend Pods之间数据包解析。
+
+在iptables模式下，kube-proxy不再充当反向代理的角色，它不会去负载backend Pods之间的流量。此任务委托给iptables/netfilter。iptables与netfilter紧密结合，因此不需要频繁地在userspace 和kernelspace之间切换上下文。此外，后台backend Pods之间的负载均衡是直接由iptables规则完成。
+
+这是整个过程（见下图）：
+
+- 在userspace模式中，Kube-proxy 监听Services及Endpoints 对象的创建/删除。
+
+- 但是，在创建/更新新Service 时，kube-proxy不会在主机上开放随机端口，而是会立刻配置iptables规则，捕获到Service的 ClusterIP 和 Port的流量，并将其重定向到Service backend中的一个。
+
+- 另外，kube-proxy 为每个 Endpoint 对象配置 iptables规则。这些规则由iptables用于选择后端POD。默认情况下，后端POD的选择是随机(random)的。
+
+因此，在iptables模式下，kube-proxy将流量重定向和后端pods之间的负载均衡任务完全委托给netfilter/iptables。所有这些任务都发生在kernelspace中，这使得处理速度比用户空间模式快得多。
+
+![](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/iptables-mode-3.png)
+
+但是，kube-proxy会保持同步netfilter规则。它会不断监视服务和端点更新，并相应地更改iptables规则。
+
+iptables模式虽然很好，但有一个明显的局限性。在userspace模式下，kube-proxy会直接在pods之间进行负载均衡，如果它试图访问的另一个pod没有响应了，它可以选择另一个pod。
+
+但是，在iptables模式下如果一开始选择的POD没有响应，而iptables规则是没有自动重试另一个POD的机制。因此，此模式取决于是否有readiness probes。
+
+# Example #2: Check iptables rules created by kube-proxy for a Service
+在本例中，我们将演示kube-proxy如何为httpd service创建iptables规则。此示例是在minikube 0.33.1部署的kubernetes 1.13.0上进行测试。
+
+首先，创建一个HTTPD Deployment:
+
+```
+kubectl run httpd-deployment --image=httpd --replicas=2
+```
+
+然后, expose Service:
+
+```
+kubectl expose deployment httpd-deployment --port=80
+```
+
+我们需要知道服务的cluster ip，以便稍后进行查看。如下所示，为10.104.141.67:
+```
+kubectl describe svc  httpd-deployment
+Name:              httpd-deployment
+Namespace:         default
+Labels:            run=httpd-deployment
+Annotations:       <none>
+Selector:          run=httpd-deployment
+Type:              ClusterIP
+IP:                10.104.141.67
+Port:              <unset>  80/TCP
+TargetPort:        80/TCP
+Endpoints:         172.17.0.5:80,172.17.0.6:80
+Session Affinity:  None
+Events:            <none>
+```
+
+Iptables规则是由 kube-proxy Pod 生成的，我们获取pod name。
+```
+
+kubectl get pods --namespace kube-system
+NAME                               READY   STATUS    RESTARTS   AGE
+kube-proxy-pz9l9                   1/1     Running   0          4m12s
+```
+
+最后进到这个pod中:
+
+```
+kubectl exec -ti kube-proxy-pz9l9  --namespace kube-system -- /bin/sh
+```
+
+现在，我们可以在kube-proxy中查看iptables。例如，你可以这样列出nat表中的所有规则:
+```
+iptables --table nat --list
+```
+或者，您可以列出KUBE-SERVICES链中所有自定义的规则，该链旨在将Services 规则存储在nat表中。
+```
+iptables -t nat -L KUBE-SERVICES
+```
+
+这个chain 包含了一系列的k8s services规则：
+```
+
+Chain KUBE-SERVICES (2 references)
+target     prot opt source               destination
+KUBE-SVC-ERIFXISQEP7F7OF4  tcp  --  anywhere             10.96.0.10           /* kube-system/kube-dns:dns-tcp cluster IP */ tcp dpt:domain
+KUBE-SVC-LC5QY66VUV2HJ6WZ  tcp  --  anywhere             10.99.201.218        /* kube-system/metrics-server: cluster IP */ tcp dpt:https
+KUBE-SVC-KO6WMUDK3F2YFERC  tcp  --  anywhere             10.104.141.67        /* default/httpd-deployment: cluster IP */ tcp dpt:http
+KUBE-SVC-NPX46M4PTMTKRN6Y  tcp  --  anywhere             10.96.0.1            /* default/kubernetes:https cluster IP */ tcp dpt:https
+KUBE-SVC-TCOU7JCQXEZGVUNU  udp  --  anywhere             10.96.0.10           /* kube-system/kube-dns:dns cluster IP */ udp dpt:domain
+KUBE-NODEPORTS  all  --  anywhere             anywhere             /* kubernetes service nodeports; NOTE: this must be the last rule in this chain */ ADDRTYPE match dst-type LOCAL
+```
+
+
+如第三条规则所示，通过TCP dpt:http转发到Cluster ip 10.104.141.67的服务的流量被转发到 **#default/httpd-deployment** (Service的后端pod)。此转发是随机挑选pod后，直接由iptables执行的。
+
+# IPVS Mode
 
 
 
