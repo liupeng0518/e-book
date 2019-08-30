@@ -1,3 +1,9 @@
+---
+title: kubernetes-reliability
+date: 2019-08-30 09:47:19
+categories: k8s
+tags: k8s
+---
 
 当k8s node节点down了之后，理应这上边的pod会被调度到其他节点，但是有时候，我们发现节点down之后，并不会立即触发，这里涉及到了kubelet的状态更新机制，同时k8s提供了一些参数以供配置。
 
