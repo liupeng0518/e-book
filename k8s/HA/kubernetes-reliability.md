@@ -81,3 +81,8 @@ kube-proxy 有一个 watcher API，一旦 Pod 被驱逐了，kube-proxy 将会�
 注意: 实际上，会有3到5次尝试。尝试的总数将从15次到25次不等。
 
 可以有不同的组合，如快速更新与慢反应，以满足特定的情况。
+
+
+
+
+原文: https://github.com/kubernetes-sigs/kubespray/blob/release-2.11/docs/kubernetes-reliability.md
