@@ -270,7 +270,7 @@ runc spec --rootless使用了user这个命名空间把容器里的root用户和�
 
 
 ```
-``bash
+```bash
 dev@dev:~/dev$ runc list
 ID          PID         STATUS      BUNDLE      CREATED     OWNER
 dev@dev:~/dev$ vim config.json
