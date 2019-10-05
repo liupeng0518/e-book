@@ -52,6 +52,30 @@ Server: Docker Engine - Community
 
 ```
 
+我们在ubuntu 18.04 安装docker.io 18.09，会有如下组件信息:
+
+```
+$ ls /usr/bin/docker*
+/usr/bin/docker             /usr/bin/docker-containerd-ctr   /usr/bin/dockerd      /usr/bin/docker-proxy
+/usr/bin/docker-containerd  /usr/bin/docker-containerd-shim  /usr/bin/docker-init  /usr/bin/docker-runc
+
+```
+
+有时我们会安装docker分发的docker-ce 18.09，他会有如下组件
+
+```
+-rwxr-xr-x 1 root root 88956192 Aug 29 05:27 /usr/bin/docker*
+lrwxrwxrwx 1 root root       25 Sep  9 06:26 /usr/bin/dockerd -> /etc/alternatives/dockerd*
+-rwxr-xr-x 1 root root 81156400 Jun 27 17:56 /usr/bin/dockerd-ce*
+-rwxr-xr-x 1 root root   764144 Jun 27 17:56 /usr/bin/docker-init*
+-rwxr-xr-x 1 root root  3480912 Jun 27 17:56 /usr/bin/docker-proxy*
+-rwxr-xr-x 1 root root 13869512 Jun 12 19:42 /usr/bin/runc*
+-rwxr-xr-x 1 root root 28885312 Jun 12 19:42 /usr/bin/ctr*
+-rwxr-xr-x 1 root root 49357408 Jun 12 19:42 /usr/bin/containerd*
+-rwxr-xr-x 1 root root  5760616 Jun 12 19:42 /usr/bin/containerd-shim*
+
+```
+
 在介绍之前，我们应该先了解下container和oci是什么。
 
 # container
@@ -82,32 +106,6 @@ Docker将其容器格式和运行时[runC](https://github.com/opencontainers/run
 ## 参考
 
 https://linux.cn/article-8763-1.html
-
-
-# 组件信息
-我们在ubuntu 18.04 安装docker.io 18.09，会有如下组件信息:
-
-```
-$ ls /usr/bin/docker*
-/usr/bin/docker             /usr/bin/docker-containerd-ctr   /usr/bin/dockerd      /usr/bin/docker-proxy
-/usr/bin/docker-containerd  /usr/bin/docker-containerd-shim  /usr/bin/docker-init  /usr/bin/docker-runc
-
-```
-
-有时我们会安装docker分发的docker-ce 18.09，他会有如下组件
-
-```
--rwxr-xr-x 1 root root 88956192 Aug 29 05:27 /usr/bin/docker*
-lrwxrwxrwx 1 root root       25 Sep  9 06:26 /usr/bin/dockerd -> /etc/alternatives/dockerd*
--rwxr-xr-x 1 root root 81156400 Jun 27 17:56 /usr/bin/dockerd-ce*
--rwxr-xr-x 1 root root   764144 Jun 27 17:56 /usr/bin/docker-init*
--rwxr-xr-x 1 root root  3480912 Jun 27 17:56 /usr/bin/docker-proxy*
--rwxr-xr-x 1 root root 13869512 Jun 12 19:42 /usr/bin/runc*
--rwxr-xr-x 1 root root 28885312 Jun 12 19:42 /usr/bin/ctr*
--rwxr-xr-x 1 root root 49357408 Jun 12 19:42 /usr/bin/containerd*
--rwxr-xr-x 1 root root  5760616 Jun 12 19:42 /usr/bin/containerd-shim*
-
-```
 
 
 # 组件介绍
