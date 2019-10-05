@@ -84,7 +84,7 @@ Docker将其容器格式和运行时[runC](https://github.com/opencontainers/run
 https://linux.cn/article-8763-1.html
 
 
-
+# 组件信息
 我们在ubuntu 18.04 安装docker.io 18.09，会有如下组件信息:
 
 ```
