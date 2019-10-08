@@ -1,5 +1,5 @@
 ---
-title: 容器运行时 1 : 容器运行时简介
+title: 容器运行时 1 - 容器运行时简介
 date: 2019-10-06 09:47:19
 categories: docker
 tags: [docker, runtime ]
