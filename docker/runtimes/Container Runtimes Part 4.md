@@ -17,7 +17,7 @@ k8s可使用的runtime
 
 ### containerd
 
-在第3部分中提到过，containerd是一个high-level runtime。containerd可能是当前最流行的CRI运行时。 CRI是containerd[插件](https://github.com/containerd/cri)实现。 默认情况下，它在unix套接字上侦听，因此您可以将crictl配置为连接到如下容器：
+在第3部分中提到过，containerd是一个high-level runtime。containerd可能是当前最流行的CRI运行时。在默认情况下启用了CRI[插件](https://github.com/containerd/cri)。 默认，它在unix socket上侦听，因此您可以通过如下配置将crictl连接到containerd：
 
 ```bash
 cat <<EOF | sudo tee /etc/crictl.yaml
@@ -25,7 +25,7 @@ runtime-endpoint: unix:///run/containerd/containerd.sock
 EOF
 ```
 
-这是一个有趣的high-level runtime ，在1.2版之后，可以通过“runtime handler”支持多个low-level runtimes。 runtime handler通过CRI规范进行交互，基于该runtime handler的containerd将通过一个称为shim的程序来启动容器。 它可以用于使用除runc之外的 low-level runtimes 来运行容器，例如 [gVisor](https://github.com/google/gvisor), [Kata Containers](https://katacontainers.io/), 或 [Nabla Containers](https://nabla-containers.github.io/)。 runtime handler 在Kubernetes1.12的 API中公开了一个alpha特性的 [RuntimeClass object](https://kubernetes.io/docs/concepts/containers/runtime-class/) 。[这里](https://github.com/containerd/containerd/pull/2434)有更多关于containerd shim概念。
+containerd是一个有意思的high-level runtime ，在1.2版之后，可以通过“runtime handler”支持多个low-level runtimes。 runtime handler通过CRI规范进行交互，基于该runtime handler的containerd将通过一个称为shim的程序来启动容器。 它可以使用除runc之外的其他 low-level runtimes 来运行容器，例如 [gVisor](https://github.com/google/gvisor), [Kata Containers](https://katacontainers.io/), 或 [Nabla Containers](https://nabla-containers.github.io/)。 runtime handler 在Kubernetes1.12中公开了一个alpha特性的 api对象-[RuntimeClass object](https://kubernetes.io/docs/concepts/containers/runtime-class/) 。[这里](https://github.com/containerd/containerd/pull/2434)有更多关于containerd shim概念。
 
 ### Docker
 
