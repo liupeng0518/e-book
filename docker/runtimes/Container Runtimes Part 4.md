@@ -28,11 +28,12 @@ EOF
 containerd是一个有意思的high-level runtime ，在1.2版之后，可以通过“runtime handler”支持多个low-level runtimes。 runtime handler通过CRI规范进行交互，基于该runtime handler的containerd将通过一个称为shim的程序来启动容器。 它可以使用除runc之外的其他 low-level runtimes 来运行容器，例如 [gVisor](https://github.com/google/gvisor), [Kata Containers](https://katacontainers.io/), 或 [Nabla Containers](https://nabla-containers.github.io/)。 runtime handler 在Kubernetes1.12中公开了一个alpha特性的 api对象-[RuntimeClass object](https://kubernetes.io/docs/concepts/containers/runtime-class/) 。[这里](https://github.com/containerd/containerd/pull/2434)有更多关于containerd shim概念。
 
 ### Docker
-
+Docker是第一个对CRI提供支持，在kubelet和Docker之间通过shim实现的。Docker已将许多功能剥离到containerd中实现了，现在可以通过containerd来支持CRI。 安装新版的Docker时，将会同时安装containerd，CRI可以直接与containerd交互。 因此，Docker本身并不需要支持CRI(containerd已经支持)。 那么可以根据情况直接安装或通过Docker安装containerd。
 
 
 ### cri-o
-
+cri-o是一个轻量级的CRI运行时，并且支持Kubernetes规范的高级运行时。 它支持[OCI compatible images](https://github.com/opencontainers/image-spec)s管理。 它支持runc和Clear Containers作为low-level runtimes。 它在理论上支持其他OCI兼容的low-level runtimes，但依赖于与runc [OCI command line interface](https://github.com/opencontainers/runtime-tools/blob/master/docs/command-line-interface.md)的兼容性，因此在实践中它不如`containerd`的shim API灵活。
 
 
 ## CRI 规范
+

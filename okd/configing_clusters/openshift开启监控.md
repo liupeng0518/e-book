@@ -44,3 +44,4 @@ openshift_metrics_schema_installer_image: "docker.io/openshift/origin-metrics-sc
 
 
 更多内容可以阅读官方文档。
+
