@@ -205,5 +205,3 @@ curl -u "admin:Harbor12345" -X DELETE -H "Content-Type: application/json" "https
 ```
 curl -u "admin:Harbor12345" -X GET -H "Content-Type: application/json" "https://192.168.183.129/api/repositories/tags?repo_name=dcos%2Fcentos"
 ```
-
- s
