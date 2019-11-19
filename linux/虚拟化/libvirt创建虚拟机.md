@@ -64,6 +64,113 @@ qemu-img create -f qcow2 VM_NAME.qcow2 10G
  </domain>
 ```
 
+
+ppc64le的模板文件
+
+```xml
+<domain type='kvm' id='7'>
+  <name>vm-template</name>
+  <uuid>6f5e8ff8-bc72-40bc-bc5c-e7e275d915d6</uuid>
+  <memory unit='KiB'>2097152</memory>
+  <currentMemory unit='KiB'>2097152</currentMemory>
+  <vcpu placement='static'>2</vcpu>
+  <resource>
+    <partition>/machine</partition>
+  </resource>
+  <os>
+    <type arch='ppc64le' machine='pseries-rhel7.5.0'>hvm</type>
+    <boot dev='cdrom'/>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>destroy</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/libexec/qemu-kvm</emulator>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/mnt/data/vm-template.qcow2'/>
+      <backingStore/>
+      <target dev='vda' bus='virtio'/>
+      <alias name='virtio-disk0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </disk>
+    <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw'/>
+      <source file='/root/tools/CentOS-7.3-everthing_ppc64le.iso'/>
+      <backingStore/>
+      <target dev='sda' bus='scsi'/>
+      <readonly/>
+      <alias name='scsi0-0-0-0'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='usb' index='0' model='qemu-xhci'>
+      <alias name='usb'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'>
+      <model name='spapr-pci-host-bridge'/>
+      <target index='0'/>
+      <alias name='pci.0'/>
+    </controller>
+    <controller type='scsi' index='0'>
+      <alias name='scsi0'/>
+      <address type='spapr-vio' reg='0x2000'/>
+    </controller>
+    <interface type='direct'>
+      <mac address='52:54:00:cf:fa:a2'/>
+      <source dev='enP49p1s0f1' mode='bridge'/>
+      <target dev='macvtap0'/>
+      <model type='virtio'/>
+      <alias name='net0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+    </interface>
+    <serial type='pty'>
+      <source path='/dev/pts/4'/>
+      <target type='spapr-vio-serial' port='0'>
+        <model name='spapr-vty'/>
+      </target>
+      <alias name='serial0'/>
+      <address type='spapr-vio' reg='0x30000000'/>
+    </serial>
+    <console type='pty' tty='/dev/pts/4'>
+      <source path='/dev/pts/4'/>
+      <target type='serial' port='0'/>
+      <alias name='serial0'/>
+      <address type='spapr-vio' reg='0x30000000'/>
+    </console>
+    <input type='keyboard' bus='usb'>
+      <alias name='input0'/>
+      <address type='usb' bus='0' port='1'/>
+    </input>
+    <input type='mouse' bus='usb'>
+      <alias name='input1'/>
+      <address type='usb' bus='0' port='2'/>
+    </input>
+    <graphics type='vnc' port='5900' autoport='yes' listen='127.0.0.1'>
+      <listen type='address' address='127.0.0.1'/>
+    </graphics>
+    <video>
+      <model type='vga' vram='16384' heads='1' primary='yes'/>
+      <alias name='video0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+    </video>
+    <memballoon model='virtio'>
+      <alias name='balloon0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </memballoon>
+    <panic model='pseries'/>
+  </devices>
+  <seclabel type='dynamic' model='dac' relabel='yes'>
+    <label>+107:+107</label>
+    <imagelabel>+107:+107</imagelabel>
+  </seclabel>
+</domain>
+
+
+
+```
 ## 启动虚拟机模板
 
 ```bash
@@ -181,7 +288,7 @@ Virsh autostart --disable VM_NAME
 
 ## 启动
 使用制作好的镜像和start.xml配置文件来创建并启动虚拟机。
-```
+```bash
 virsh define VM_NAME.xml
 virsh start VM_NAME
 ```

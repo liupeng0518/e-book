@@ -72,7 +72,7 @@ https://kubernetes.github.io/ingress-nginx/deploy/baremetal/
 - Using a self-provisioned edge
 - External IPs
 
-# MetalLB
+## MetalLB
 待补充...
 
 ## EXTERNAL-IP
@@ -360,7 +360,7 @@ default backend - 404
 [root@lab1 deploy]# curl -k  https://10.7.12.204
 default backend - 404
 
-```   users:(("nginx",pid=28179,fd=13),("nginx",pid=28175,fd=13),("nginx",pid=27967,fd=13))
+​```   users:(("nginx",pid=28179,fd=13),("nginx",pid=28175,fd=13),("nginx",pid=27967,fd=13))
 LISTEN     0      128         :::443                     :::*                   users:(("nginx",pid=28179,fd=16),("nginx",pid=28175,fd=16),("nginx",pid=27967,fd=16))
 LISTEN     0      128         :::18080                   :::*                   users:(("nginx",pid=28179,fd=18),("nginx",pid=28175,fd=18),("nginx",pid=27967,fd=18))
 LISTEN     0      128         :::80                      :::*                   users:(("nginx",pid=28179,fd=14),("nginx",pid=28175,fd=14),("nginx",pid=27967,fd=14))
