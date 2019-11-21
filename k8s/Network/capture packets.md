@@ -48,7 +48,7 @@ nsenter -n --target <PID>
 nsenter: /usr/bin/nsenter /usr/share/man/man1/nsenter.1.gz
 　　如果没安装可创建install.sh，并执行
 
-
+```
 #!/bin/bash
 
 curl https://www.kernel.org/pub/linux/utils/util-linux/v2.24/util-linux-2.24.tar.gz | tar -zxf-
@@ -57,9 +57,10 @@ cd util-linux-2.24
 make nsenter
 sudo cp nsenter /usr/local/bin
 cd .. && rm -rf util-linux-2.24
+```
 
 方式一：创建docker-enter并置于$PATH下
-
+```
 #!/bin/sh
 
 if [ -e $(dirname "$0")/nsenter ]; then
@@ -95,13 +96,14 @@ else
     "$NSENTER" $OPTS env --ignore-environment -- "$@"
   fi
 fi
+```
 
 　　常见问题：nsenter: failed to execute su: No such file or directory
 
 　　这是由于容器中的PATH 路径问题，使用/bin/su 即可。
 
 方式二：也可以将其放在.bashrc中，就可以方便的使用了。（运行source ./bashrc不重启生效）
-
+```
 #docker
 #export DOCKER_HOST=tcp://localhost:4243
 alias docker-pid="sudo docker inspect --format '{{.State.Pid}}'"
@@ -145,7 +147,7 @@ function docker-enter() {
         fi
     fi
 }
-
+```
 　　执行：source ./bashrc，让修改生效。
 
 　　进入容器：
