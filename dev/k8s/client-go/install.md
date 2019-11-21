@@ -1,10 +1,10 @@
-
 ---
 title: client-go
 date: 2019-09-28 09:47:19
-categories: docker
+categories: k8s
 tags: [k8s, client-go]
 ---
+
 使用go mod做管理包依赖还是很方便的，在使用client-go时我们也可以使用
 
 
