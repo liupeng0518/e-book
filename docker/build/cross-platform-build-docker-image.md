@@ -1,6 +1,7 @@
 ---
 title: 跨平台构建 Docker 镜像
 date: 2018-06-13
+categories: docker
 tags: [linux, docker]
 ---
 

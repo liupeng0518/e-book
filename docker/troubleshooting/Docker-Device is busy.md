@@ -1,6 +1,7 @@
 ---
 title: docker device or resource busy
 date: 2019-08-10
+categories: docker
 tags: [linux, docker]
 ---
 

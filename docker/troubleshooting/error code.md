@@ -1,6 +1,7 @@
 ---
 title: error code
 date: 2018-12-10 09:47:19
+categories: docker
 tags: [linux]
 ---
 
