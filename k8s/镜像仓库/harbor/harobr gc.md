@@ -18,16 +18,87 @@ Harbor删除镜像后且GC清理后，磁盘空间没有释放。因为我们pus
 
 此文件在harbor安装目录下,关闭的目的是为了禁止身份验证
 
-![img](https://img2018.cnblogs.com/blog/1076553/201812/1076553-20181220205651231-665360195.png)
+```yaml
+version: 0.1
+log:
+  level: info
+  fields:
+    service: registry
+storage:
+  cache:
+    layerinfo: redis
+  filesystem:
+    rootdirectory: /storage
+  maintenance:
+    uploadpurging:
+      enabled: false
+  delete:
+    enabled: true
+redis:
+  addr: redis:6379
+  password: 
+  db: 1
+http:
+  addr: :5000
+  secret: placeholder
+  debug:
+    addr: localhost:5001
+#auth:
+#  token:
+#    issuer: harbor-token-issuer
+#    realm: http://10.7.12.186:8081/service/token
+#    rootcertbundle: /etc/registry/root.crt
+#    service: harbor-registry
+validation:
+  disabled: true
+notifications:
+  endpoints:
+  - name: harbor
+    disabled: false
+    url: http://core:8080/service/notifications
+    timeout: 3000ms
+    threshold: 5
+    backoff: 1s
+compatibility:
+  schema1:
+    enabled: true
+```
 
- 
 
 ###  2、修改 docker-compose.yml 文件
 
 此文件在harbor安装目录下，修改此文件的目的是把registry port端口暴露出来,添加红框出的配置，注意格式。
 
-![img](https://img2018.cnblogs.com/blog/1076553/201812/1076553-20181220205935667-1996398803.png)
 
+```yaml
+version: '2.3'
+services:
+  log:
+    image: goharbor/harbor-log:v1.8.3
+    container_name: harbor-log
+    restart: always
+    dns_search: .
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - SETGID
+      - SETUID
+    volumes:
+      - /var/log/harbor/:/var/log/docker/:z
+      - ./common/config/log/:/etc/logrotate.d/:z
+    ports:
+      - 127.0.0.1:1514:10514
+    networks:
+      - harbor
+  registry:
+    ports:
+      - 127.0.0.1:5000:5000
+    image: goharbor/registry-photon:v2.7.1-patch-2819-v1.8.3
+    container_name: registry
+
+```
 ### 3、重新配置harbor，使其配置生效
 
 执行下面的命令
