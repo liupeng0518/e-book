@@ -1095,3 +1095,11 @@ listening on nflog, link-type NFLOG (Linux netfilter log messages), capture size
 
 
 ```
+
+99 常用
+-------
+抓取keepalived 的vrrp包
+```
+tcpdump -i eth0 vrrp -n
+
+```
