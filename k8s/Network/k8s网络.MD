@@ -141,7 +141,7 @@ docker run -d --name busybox --net overlay busybox sleep 36000
 | node-1 | 192.168.1.68  | 10.20.0.3/16 |
 | node-2 | 192.168.1.254 | 10.20.0.2/16 |
 
-![docker overlay ping](https://int32bit.me/img/posts/%E8%81%8A%E8%81%8A%E5%87%A0%E7%A7%8D%E4%B8%BB%E6%B5%81Docker%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/docker-overlay-ping-1.png)
+![docker overlay ping](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/docker-overlay-ping-1.png)
 
 我们发现容器有两个IP，其中10.20.0.0/16为我们创建的overlay网络ip，两个容器能够互相ping通。而不在同一个node的容器IP都是172.18.0.2，因此172.18.0.0/16显然不是多主机网络，只能是单机网络。
 
@@ -235,7 +235,7 @@ br0             8000.6ace89a2894a       no              veth0
 
 vxlan0是一个vxlan虚拟网络设备，因此可以推断docker overlay是通过vxlan隧道实现跨主机通信的。这里直接引用[Deep dive into docker overlay networks part 1](https://blog.d2si.io/2017/04/25/deep-dive-into-docker-overlay-networks-part-1/)的图:
 
-![docker overlay](https://int32bit.me/img/posts/%E8%81%8A%E8%81%8A%E5%87%A0%E7%A7%8D%E4%B8%BB%E6%B5%81Docker%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/docker-overlay-1.png)
+![docker overlay](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/docker-overlay-1.png)
 
 图中192.168.0.0/16对应前面的10.20.0.0/16网段。
 
@@ -245,7 +245,7 @@ vxlan0是一个vxlan虚拟网络设备，因此可以推断docker overlay是通�
 
 和OpenStack Neutron的L2 Population原理一样，Docker也是通过ARP代理+静态配置解决ARP问题。我们知道，虽然Linux底层除了自学习方式外无法知道目标IP的MAC地址是什么，但是应用却很容易获取这些信息，比如Neutron的数据库中就保存着Port信息，Port中就有IP和MAC地址。Docker也一样会把endpoint信息保存到KV数据库中，如etcd:
 
-![docker endpoint](https://int32bit.me/img/posts/%E8%81%8A%E8%81%8A%E5%87%A0%E7%A7%8D%E4%B8%BB%E6%B5%81Docker%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/docker-endpoint.png)
+![docker endpoint]( https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/docker-endpoint.png )
 
 有了这些数据完全可以实现通过静态配置的方式获取IP和MAC地址映射而规避使用ARP广播的方式。因此前面的vxlan0还负责本地容器的ARP代理：
 
@@ -316,7 +316,7 @@ docker run -d --name busybox-node-3 --net weave busybox sleep 3600
 
 在容器中我们相互ping:
 
-![weave ping 1](https://int32bit.me/img/posts/%E8%81%8A%E8%81%8A%E5%87%A0%E7%A7%8D%E4%B8%BB%E6%B5%81Docker%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/weave-ping-1.png)
+![weave ping 1](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/weave-ping-1.png)
 
 从结果发现，Weave实现了跨主机容器通信，另外我们容器有两个虚拟网卡，一个是Docker原生的桥接网卡eth0，用于南北通信，另一个是Weave附加的虚拟网卡ethwe0，用于容器跨主机通信。
 
@@ -415,7 +415,7 @@ system@datapath:
 
 最后Weave的网络流量图如下：
 
-![weave](https://int32bit.me/img/posts/%E8%81%8A%E8%81%8A%E5%87%A0%E7%A7%8D%E4%B8%BB%E6%B5%81Docker%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/weave.png)
+![weave](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/weave.png)
 
 ## 四、简单优雅的Flannel
 
@@ -530,7 +530,7 @@ da:17:1b:07:d3:70 dev flannel.1 dst 192.168.1.254 self permanent
 
 因此Flannel的Overlay网络实现原理简化如图:
 
-![flannel](https://int32bit.me/img/posts/%E8%81%8A%E8%81%8A%E5%87%A0%E7%A7%8D%E4%B8%BB%E6%B5%81Docker%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/flannel.png)
+![flannel](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/flannel.png)
 
 可见除了增加或者减少Node，需要Flannel配合配置静态路由以及fdb表，容器的创建与删除完全不需要Flannel干预，事实上Flannel也不需要知道有没有新的容器创建或者删除。
 
@@ -540,7 +540,7 @@ da:17:1b:07:d3:70 dev flannel.1 dst 192.168.1.254 self permanent
 
 需要注意的是，如果使用AWS EC2，使用Flannel host-gw网络需要禁用MAC地址欺骗功能，如图:
 
-![Change Source/Dest. Check](https://int32bit.me/img/posts/%E8%81%8A%E8%81%8A%E5%87%A0%E7%A7%8D%E4%B8%BB%E6%B5%81Docker%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/ec2-ip-mac-check.png)
+![Change Source/Dest. Check](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/ec2-ip-mac-check.png)
 
 使用OpenStack则最好禁用Neutron的port security功能。
 
@@ -592,7 +592,7 @@ host-gw的方式相对overlay由于没有vxlan的封包拆包过程，直接路�
 
 之前一直很疑惑AWS的role如何与EC2虚拟机关联起来的。换句话说，如何实现虚拟机无需配置Key和Secretd等认证信息就可以直接调用AWS API，通过awscli的`--debug`信息可知awscli首先通过metadata获取role信息，再获取role的Key和Secret：
 
-![aws cli debug](https://int32bit.me/img/posts/%E8%81%8A%E8%81%8A%E5%87%A0%E7%A7%8D%E4%B8%BB%E6%B5%81Docker%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/aws-cli-debug.png)
+![aws cli debug](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/aws-cli-debug.png)
 
 关于AWS如何知道调用metadata的是哪个EC2实例，可参考之前的文章[OpenStack虚拟机如何获取metadata](https://int32bit.me/2018/07/01/OpenStack-metadata服务原理解析/).
 
@@ -620,11 +620,11 @@ flannel配置如下:
 
 我们查看node-1、node-2、node-3关联的路由表如图:
 
-![aws route](https://int32bit.me/img/posts/%E8%81%8A%E8%81%8A%E5%87%A0%E7%A7%8D%E4%B8%BB%E6%B5%81Docker%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/aws-route-1.png)
+![aws route](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/aws-route-1.png)
 
 node-4关联的路由表如图:
 
-![aws route](https://int32bit.me/img/posts/%E8%81%8A%E8%81%8A%E5%87%A0%E7%A7%8D%E4%B8%BB%E6%B5%81Docker%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/aws-route-2.png)
+![aws route](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/aws-route-2.png)
 
 由此可见，每增加一个Flannel节点，Flannel就会调用AWS API在EC2实例的子网关联的路由表上增加一条记录，Destination为该节点分配的Flannel子网，Target为该EC2实例的主网卡。
 
@@ -639,7 +639,7 @@ node-4关联的路由表如图:
 
 所有节点ping node-4的容器，如图：
 
-![aws route](https://int32bit.me/img/posts/%E8%81%8A%E8%81%8A%E5%87%A0%E7%A7%8D%E4%B8%BB%E6%B5%81Docker%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/aws-vpc-ping-1.png)
+![aws route](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/aws-vpc-ping-1.png)
 
 我们发现所有节点都能ping通node-4的容器。但是node-4的容器却ping不通其余容器：
 
@@ -657,13 +657,13 @@ node-4关联的路由表如图:
 
 重启Flannel服务，再次查看两个路由表：
 
-![aws route](https://int32bit.me/img/posts/%E8%81%8A%E8%81%8A%E5%87%A0%E7%A7%8D%E4%B8%BB%E6%B5%81Docker%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/aws-route-3.png)
+![aws route](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/aws-route-3.png)
 
 我们发现两个路由表均添加了node1 ~ node4的Flannel子网路由。
 
 此时四个节点的容器能够相互ping通。
 
-![aws route](https://int32bit.me/img/posts/%E8%81%8A%E8%81%8A%E5%87%A0%E7%A7%8D%E4%B8%BB%E6%B5%81Docker%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/aws-vpc-ping-3.png)
+![aws route](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/aws-vpc-ping-3.png)
 
 从中我们发现，**aws-vpc解决了host-gw不能跨子网的问题**，Flannel官方也建议如果使用AWS，则推荐使用aws-vpc替代overlay方式，能够获取更好的性能：
 
@@ -673,7 +673,7 @@ node-4关联的路由表如图:
 
 另外，由于路由是添加到了主机网关上，因此只要关联了该路由表，EC2实例是可以从外面直接ping通容器的，换句话说，同一子网的EC2虚拟机可以直接ping通容器IP。
 
-![aws route](https://int32bit.me/img/posts/%E8%81%8A%E8%81%8A%E5%87%A0%E7%A7%8D%E4%B8%BB%E6%B5%81Docker%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/aws-vpc-ping-4.png)
+![aws route](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/aws-vpc-ping-4.png)
 
 不过需要注意的是，AWS路由表默认最多支持50条路由规则，这限制了Flannel节点数量，不知道AWS是否支持增加配额功能。另外目前最新版的Flannel v0.10.0好像对aws-vpc支持有点问题，再官方修复如上问题之前建议使用Flannel v0.8.0版本。
 
@@ -724,7 +724,7 @@ int32bit-docker-3 197.19.26.0/26
 | node-2 | 192.168.1.254 | 197.19.186.197 |
 | node-3 | 192.168.1.245 | 197.19.26.5/24 |
 
-![calico ping each other](https://int32bit.me/img/posts/%E8%81%8A%E8%81%8A%E5%87%A0%E7%A7%8D%E4%B8%BB%E6%B5%81Docker%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/calico-ping-1.png)
+![calico ping each other](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/calico-ping-1.png)
 
 相互ping通没有问题。
 
@@ -761,7 +761,7 @@ default via 169.254.1.1 dev cali0
 
 第二个问题，回顾之前的网络模型，大多数都是把容器的网卡通过VETH连接到一个bridge设备上，而这个bridge设备往往也是容器网关，相当于主机上多了一个虚拟网卡配置。Calico认为容器网络不应该影响主机网络，因此容器的网卡的VETH另一端没有经过bridge直接挂在默认的namespace中。而容器配的网关其实也是假的，通过proxy_arp修改MAC地址模拟了网关的行为，所以网关IP是什么也无所谓，那就直接选择了local link的一个ip，这还节省了容器网络的一个IP。我们可以抓包看到ARP包:
 
-![calico arp](https://int32bit.me/img/posts/%E8%81%8A%E8%81%8A%E5%87%A0%E7%A7%8D%E4%B8%BB%E6%B5%81Docker%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/calico-arp.png)
+![calico arp](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/calico-arp.png)
 
 可以看到容器网卡的对端`calia2656637189`直接代理回复了ARP，因此出去网关时容器的包会直接把MAC地址修改为`06:66:26:8e:b2:67`,即伪网关的MAC地址。
 
@@ -821,7 +821,7 @@ blackhole 197.19.38.128/26 proto bird
 
 我们发现在同一个主机不在同一个网络的容器IP地址在同一个子网，那不是可以通信呢?
 
-![calico ping each other](https://int32bit.me/img/posts/%E8%81%8A%E8%81%8A%E5%87%A0%E7%A7%8D%E4%B8%BB%E6%B5%81Docker%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/calico-ping-2.png)
+![calico ping each other](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/.images/calico-ping-2.png)
 
 我们发现虽然两个跨网络的容器分配的IP在同一个子网，但居然实现了隔离。
 
@@ -850,7 +850,7 @@ Calico把cali-FORWARD子链挂在了FORWARD链上，comment中的一串看起来
 
 `cali+`表示所有以cali为前缀的网络接口，即容器的网卡对端设备。由于我们只关心发往容器的流量方向，即从caliXXX发往容器的流量，因此我们只关心条件匹配的`-o cali+`的规则，从如上可以看出所有从`cali+`出来的流量都跳转到了`cali-to-wl-dispatch`子链处理，其中`wl`是workload的缩写，workload即容器。
 
-```
+```bash
 # iptables-save -t filter | grep -- '-A cali-to-wl-dispatch'
 -A cali-to-wl-dispatch -o calia2656637189 -m comment --comment "cali:TFwr8sfMnFH3BUla" -g cali-tw-calia2656637189
 -A cali-to-wl-dispatch -o calib12b038e611 -m comment --comment "cali:ZbRb0ozg-GGeUfRA" -g cali-tw-calib12b038e611
@@ -862,7 +862,7 @@ Calico把cali-FORWARD子链挂在了FORWARD链上，comment中的一串看起来
 
 我们假设是发往busybox 197.19.38.139这个容器的，对应的主机虚拟设备为`calia2656637189`，则跳转子链为`cali-tw-calia2656637189`：
 
-```
+```bash
 # iptables-save -t filter | grep -- '-A cali-tw-calia2656637189'
 -A cali-tw-calia2656637189 -m comment --comment "cali:259EHpBvnovN8_q6" -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 -A cali-tw-calia2656637189 -m comment --comment "cali:YLokMEiVkZggfg9R" -m conntrack --ctstate INVALID -j DROP
@@ -900,7 +900,7 @@ Calico把cali-FORWARD子链挂在了FORWARD链上，comment中的一串看起来
 
 规则很简单，只要IP在cali4-s:VFoIKKR-LOG_UuTlYqcKubo在这个ipset集合中就设置mark第25位为1，然后RETURN，否则如果IP不在ipset中则直接DROP（子链的默认行为为DROP)。
 
-```
+```bash
 # ipset list cali4-s:VFoIKKR-LOG_UuTlYqcKubo
 Name: cali4-s:VFoIKKR-LOG_UuTlYqcKubo
 Type: hash:ip
