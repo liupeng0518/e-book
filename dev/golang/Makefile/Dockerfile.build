@@ -1,0 +1,9 @@
+FROM golang:1.13.0-buster
+
+ENV CGO_ENABLED=0 \
+  GOOS=linux \
+  GO111MOUDLE=on \
+  GOSUMDB=off
+
+# COPY
+# WORKDIR
