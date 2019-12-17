@@ -1,7 +1,7 @@
 ---
 title: 更小的golang二进制文件
-
 date: 2019-09-30 09:47:19
+categories: golang
 tags: [golang]
 ---
 

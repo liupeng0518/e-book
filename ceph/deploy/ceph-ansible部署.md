@@ -26,7 +26,6 @@ ceph-ansible 是ceph官方出品，可以极大简化工作效率，这里简单
 ```
 yum -y install epel-release
 yum -y install python-pip
-pip install ansible=2.6.11
 
 ```
 
@@ -85,6 +84,10 @@ group_vars/all.yml
 cp group_vars/all.yml.sample group_vars/all.yml
 
 vim group_vars/all.yml
+
+# ceph_origin: distro # 使用distro，则不会使用公网源
+# ceph_repository: local 
+# ceph_stable_release: luminous # 想安装L版，写成 luminous 即可，确保你的repo中有此版本的包
 
 ceph_origin: repository
 ceph_repository: community

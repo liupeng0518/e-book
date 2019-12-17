@@ -1,8 +1,8 @@
 ---
 title: golang 笔记 -- func
-
 date: 2018-05-1 09:47:19
-tags: [golang]
+categories: golang
+tags: [golang, func]
 ---
 
 先看一看func 的基本构成元素
