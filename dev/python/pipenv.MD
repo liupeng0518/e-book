@@ -2,7 +2,7 @@
 title: pipenv 使用
 date: 2019-06-13T17:20:00+08:00
 categories: pipenv
-tags: [linux,pipenv]
+tags: [linux,pipenv,python]
 
 ---
 中文文档：https://pythonguidecn.readthedocs.io/zh/latest/dev/virtualenvs.html
@@ -288,7 +288,8 @@ pipenv lock
 
 
 
-参考链接
+# 参考链接
+
 https://docs.pipenv.org/
 
 http://www.liujiangblog.com/blog/18/

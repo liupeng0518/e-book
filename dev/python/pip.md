@@ -2,7 +2,7 @@
 title: pip 相关操作
 date: 2019-06-13T17:20:00+08:00
 categories: pip
-tags: [linux,pip]
+tags: [linux,pip,python]
 ---
 
 
