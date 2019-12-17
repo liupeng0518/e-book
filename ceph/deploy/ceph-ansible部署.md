@@ -17,13 +17,13 @@ ceph-ansible 是ceph官方出品，可以极大简化工作效率，这里简单
 
 > 
 > 
-> 内核升级为 4.18.16-1.el7.elrepo.x86_64
+> 可选：内核升级为 4.18.16-1.el7.elrepo.x86_64
 > 
 > 
 
 ### 部署环境安装
 这里我们打算使用版本3.2 的部署，这里要求ansible的版本最高不能超过2.6
-```
+```bash
 yum -y install epel-release
 yum -y install python-pip
 
@@ -34,7 +34,7 @@ yum -y install python-pip
 
 #### 下载项目
 
-```
+```bash
 git clone https://github.com/ceph/ceph-ansible.git
 cd ceph-ansible/
 git checkout v3.2.0
@@ -45,7 +45,7 @@ pip install -r requirements.txt
 
 #### host
 
-```
+```ini
 [mons]
 10.7.12.201
 10.7.12.202
@@ -79,7 +79,7 @@ pip install -r requirements.txt
 #### 修改配置
 
 group_vars/all.yml
-```
+```yaml
 
 cp group_vars/all.yml.sample group_vars/all.yml
 
@@ -163,7 +163,7 @@ ceph_conf_overrides:
 
 ```
 groups_vars/osds.yml
-```
+```yaml
 cp group_vars/osds.yml.sample group_vars/osds.yml
 
 vim group_vars/osds.yml
@@ -194,7 +194,7 @@ osd_objectstore: bluestore
 ```
 
 site.yml
-```
+```yaml
 cp site.yml.sample site.yml
 
 # 选择需要部署的组件
@@ -220,7 +220,7 @@ vim site.yml
 ```
 #### 部署
 
-```
+```bash
 ansible-playbook -i hosts site.yml
 
 ```
@@ -228,7 +228,7 @@ ansible-playbook -i hosts site.yml
 
 #### 清空集群
 
-```
+```bash
 cp infrastructure-playbooks/purge-cluster.yml purge-cluster.yml 
 ansible-playbook -i hosts purge-cluster.yml
 
