@@ -1,6 +1,6 @@
 ---
 title: kubectl exec 是如何工作的
-date: 2019-12-18 17:13:01
+date: 2019-10-18 17:13:01
 categories: k8s
 tags: [k8s, kubectl]
 
