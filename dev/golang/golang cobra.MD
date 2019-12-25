@@ -6,8 +6,6 @@ tags: [golang, cobra]
 
 ---
 
-这几天稍微写了下cobra，网上搜到的博客分为两类，一类是把官方的readme翻译一下完事的，一类是写的都太简单了没有实际常见场景的。这里不废话了，先用官方demo讲解下
-
 ## Cobra介绍
 
 是一个golang的库，其提供简单的接口来创建强大现代的CLI接口，类似于git或者go工具。同时，它也是一个应用，用来生成个人应用框架，从而开发以Cobra为基础的应用。热门的docker和k8s源码中都使用了Cobra
@@ -680,7 +678,7 @@ Run功能的执行先后顺序如下：
   command.SetHelpTemplate(s string)
   ```
 
-- usage
+- **usage**
 
   ```
   command.SetUsageFunc(f func(*Command) error)
