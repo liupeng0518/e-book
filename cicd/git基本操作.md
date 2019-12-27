@@ -170,3 +170,10 @@ git clone -c core.symlinks=true git@xxxxxx.git
 ```
 core.symlinks=true
 ```
+说明： https://github.com/git-for-windows/git/wiki/Symbolic-Links
+
+# win git 大小写
+```
+git config core.ignorecase false
+
+```
