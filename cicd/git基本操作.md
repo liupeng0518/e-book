@@ -6,7 +6,8 @@ tags: [cicd, git]
 
 ---
 
-# git强制覆盖：
+
+# git强制覆盖
 
 ```
 git fetch --all
@@ -14,9 +15,9 @@ git fetch --all
 git pull
 ```
 
-git强制覆盖本地命令（单条执行）：
+git强制覆盖本地命令（单条执行）
 
- ```
+```
 git fetch --all && git reset --hard origin/master && git pull
 
 ```
@@ -33,6 +34,7 @@ git push
 ```
 
 # git查看某个文件的提交历史
+
 ```
 git log --pretty=oneline 文件名
 
@@ -70,7 +72,7 @@ git add . //添加所有文件
 
 git commit -m "本功能全部完成"
 ```
- 
+
 
 执行完commit后，想撤回commit，怎么办？
 
@@ -80,7 +82,7 @@ git commit -m "本功能全部完成"
 ```
 git reset --soft HEAD^
 ```
- 
+
 
 这样就成功的撤销了你的commit
 
@@ -104,12 +106,12 @@ HEAD^的意思是上一个版本，也可以写成HEAD~1
 
 意思是：不删除工作空间改动代码，撤销commit，并且撤销git add . 操作
 这个为默认参数,git reset --mixed HEAD^ 和 git reset HEAD^ 效果是一样的。
- 
+
 
 --soft  
 
 不删除工作空间改动代码，撤销commit，不撤销git add . 
- 
+
 --hard
 
 删除工作空间改动代码，撤销commit，撤销git add . 
@@ -126,3 +128,45 @@ git commit --amend
 ```
 
 此时会进入默认vim编辑器，修改注释完毕后保存就好了。
+
+# 代理
+
+```
+# socks5协议，1080端口修改成自己的本地代理端口
+git config --global http.proxy socks5://127.0.0.1:1080
+git config --global https.proxy socks5://127.0.0.1:1080
+
+# http协议，1081端口修改成自己的本地代理端口
+git config --global http.proxy http://127.0.0.1:1081
+git config --global https.proxy https://127.0.0.1:1081
+
+# 
+下面是仅仅针对github进行配置，让github走本地代理，其他的保持不变；
+# socks5协议，1080端口修改成自己的本地代理端口
+git config --global http.https://github.com.proxy socks5://127.0.0.1:1080
+git config --global https.https://github.com.proxy socks5://127.0.0.1:1080
+
+# http协议，1081端口修改成自己的本地代理端口
+git config --global http.https://github.com.proxy https://127.0.0.1:1081
+git config --global https.https://github.com.proxy https://127.0.0.1:1081
+
+其他几个相关命令：
+# 查看所有配置
+git config -l
+
+# reset 代理设置
+git config --global --unset http.proxy
+git config --global --unset https.proxy
+```
+
+# win git识别linux软链
+
+```
+git clone -c core.symlinks=true git@xxxxxx.git
+
+```
+或者打开conf
+
+```
+core.symlinks=true
+```
