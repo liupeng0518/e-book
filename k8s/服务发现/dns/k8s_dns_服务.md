@@ -86,7 +86,7 @@ k8s-n1    Ready      node      6m        v1.11.1
 ```
 
 
-官方kubends 和coredns切换 脚本：
+官方kubedns 和coredns切换 脚本：
 https://github.com/coredns/deployment/tree/master/kubernetes
 
 
