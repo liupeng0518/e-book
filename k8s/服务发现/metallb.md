@@ -73,6 +73,19 @@ BGP模式是真正的LoadBalancer。
 
 # 安装
 
+安装MetalLB比较简单。
+
+```
+kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.7.3/manifests/metallb.yaml
+```
+
+编排文件主要部署2个组件：
+
+- `metallb-system/controller`，负责IP地址的分配，以及service和endpoint的监听
+- `metallb-system/speaker`，负责保证service地址可达，例如Layer 2模式下，speaker会负责ARP请求应答。
+
+注意，部署后，还需要根据具体的地址通告方式，配置configmap `metallb-system/config`。controller会读取该configmap，并reload配置。
+
 在裸金属集群上安装MetalLB后，LoadBalancer类型的服务即可使用。注意，除了自动分配，你也可以通过服务的spec.loadBalancerIP静态的指定IP地址。
 
 ## 前提条件
