@@ -197,44 +197,49 @@ curl 10.7.12.201:30175
 
 # 4层
 
-Exposing TCP and UDP services[¶](https://kubernetes.github.io/ingress-nginx/user-guide/exposing-tcp-udp-services/#exposing-tcp-and-udp-services)
-
-Ingress does not support TCP or UDP services. For this reason this Ingress controller uses the flags `--tcp-services-configmap` and `--udp-services-configmap` to point to an existing config map where the key is the external port to use and the value indicates the service to expose using the format: `::[PROXY]:[PROXY]`
-
-It is also possible to use a number or the name of the port. The two last fields are optional. Adding `PROXY` in either or both of the two last fields we can use Proxy Protocol decoding (listen) and/or encoding (proxy_pass) in a TCP service https://www.nginx.com/resources/admin-guide/proxy-protocol
-
-The next example shows how to expose the service `example-go` running in the namespace `default` in the port `8080` using the port `9000`
-
-
-
+创建资源，这里简单创建一个mysql
 ```
 apiVersion: v1
-kind: ConfigMap
+kind: Pod
 metadata:
-  name: tcp-services
-  namespace: ingress-nginx
-data:
-  9000: "default/example-go:8080"
-```
-
-Since 1.9.13 NGINX provides [UDP Load Balancing](https://www.nginx.com/blog/announcing-udp-load-balancing/). The next example shows how to expose the service `kube-dns` running in the namespace `kube-system` in the port `53` using the port `53`
-
-
-
-```
+  name: mysql
+  namespace: default
+  labels:
+    name: mysql
+spec:
+  containers:
+  - name: mysql
+    image: docker.io/bitnami/mariadb:10.3.20-debian-9-r19
+    ports:
+    - containerPort: 3306
+      protocol: TCP
+    env:
+    - name: MARIADB_ROOT_PASSWORD
+      value: "123456"
+---
 apiVersion: v1
-kind: ConfigMap
+kind: Service
 metadata:
-  name: udp-services
-  namespace: ingress-nginx
-data:
-  53: "kube-system/kube-dns:53"
+  name: svc-mysql
+  namespace: default
+  labels:
+    run: mysql
+spec:
+  ports:
+  - port: 3306
+    targetPort: 3306
+    protocol: TCP
+  selector:
+    name: mysql
 ```
 
-If TCP/UDP proxy support is used, then those ports need to be exposed in the Service defined for the Ingress.
+tcp-services-configmap 添加:
+```
+3306: "default/svc-mysql:3306"
 
+```
 
-
+Nginx Ingress Service 添加端口：
 ```
 apiVersion: v1
 kind: Service
@@ -255,11 +260,17 @@ spec:
       port: 443
       targetPort: 443
       protocol: TCP
-    - name: proxied-tcp-9000
-      port: 9000
-      targetPort: 9000
+    - name: proxie-tcp-mysql
+      port: 3306
+      targetPort: 3306
       protocol: TCP
   selector:
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/part-of: ingress-nginx
+```
+
+这里我们就可以通过lb的3306来访问mysql：
+```
+root@node1:~/peng/l4# mysql -uroot -p123456 -h10.7.13.202 -P3306
+
 ```
