@@ -1,3 +1,10 @@
+---
+title: "/what happens when k8s"
+date: 2019-12-24 17:13:01
+categories: k8s
+tags: [k8s]
+
+---
 想象一下，如果我想将 nginx 部署到 Kubernetes 集群，我可能会在终端中输入类似这样的命令：
 
 ```shell

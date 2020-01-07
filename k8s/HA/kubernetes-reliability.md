@@ -13,7 +13,7 @@ tags: k8s
 为了简单的期间，将跳过HA的大部分内容来描述Kubelet <-> Controller Manager通信。
 
 1. kubelet 自身会定期更新状态到 apiserver，通过参数--node-status-update-frequency 可以指定上报频率，默认是 10s 一次。
-2. kube-controller-manager 会每隔--node-monitor-period 时间去检查 kubelet 的状态，默认 5s。
+2. kube-controller-manager 会每隔--node-monitor-period 时间去检查 kubelet 的状态，默认 5s（从etcd中）。
 3. 当 node 失联 --node-monitor-grace-period 时间后，kubernetes 判定 node 为 notready 状态，默认 40s。
 
 4. 当 node 失联 --node-startup-grace-period 时间后，kubernetes 判定 node 为 unhealthy 状态，默认 1m0s。
@@ -39,7 +39,7 @@ kube-proxy 有一个 watcher API，一旦 Pod 被驱逐了，kube-proxy 将会�
 如果  
 
       -–node-status-update-frequency is set to 4s (10s is default)
-
+    
       --node-monitor-period to 2s (5s is default)
       
       --node-monitor-grace-period to 20s (40s is default)
@@ -86,3 +86,9 @@ kube-proxy 有一个 watcher API，一旦 Pod 被驱逐了，kube-proxy 将会�
 
 
 原文: https://github.com/kubernetes-sigs/kubespray/blob/release-2.11/docs/kubernetes-reliability.md
+
+
+
+# 参考
+
+[https://zdyxry.github.io/2019/06/26/Kubernetes-%E5%AE%9E%E6%88%98-Pod-%E5%8F%AF%E7%94%A8%E6%80%A7/](https://zdyxry.github.io/2019/06/26/Kubernetes-实战-Pod-可用性/)
