@@ -193,7 +193,7 @@ workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter())
 
 `Workqueue` 提供了很多函数来处理 key，每个 key 在 `Workqueue` 中的生命周期如下图所示：
 
-![https://hugo-picture.oss-cn-beijing.aliyuncs.com/images/eENdLY.jpg](https://hugo-picture.oss-cn-beijing.aliyuncs.com/images/eENdLY.jpg)
+![](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/控制器/a-deep-dive-into-kubernetes-controllers.assets/eENdLY.jpg)
 
 
 
@@ -227,13 +227,7 @@ controller.runWorker()
 
 所有处理流程如下所示：
 
-![https://hugo-picture.oss-cn-beijing.aliyuncs.com/blog/2019-06-29-033816.jpg](https://hugo-picture.oss-cn-beijing.aliyuncs.com/blog/2019-06-29-033816.jpg)
-
-
-
-
-
-控制器处理事件的流程
+![控制器处理事件的流程](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/控制器/a-deep-dive-into-kubernetes-controllers.assets/2019-06-29-033816.jpg)
 
 
 

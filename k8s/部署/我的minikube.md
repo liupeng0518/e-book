@@ -7,11 +7,11 @@ tags: [k8s, minikube]
 ---
 
 启动
-
+```
 ➜ minikube start --vm-driver kvm2
-
+```
 查看启动虚拟机
-
+```
 ➜ virsh list
  Id    Name                           State
 ----------------------------------------------------
@@ -39,3 +39,4 @@ tags: [k8s, minikube]
 - registry-creds: disabled
 - storage-provisioner: enabled
 - storage-provisioner-gluster: disabled
+```
