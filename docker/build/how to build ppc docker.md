@@ -2,7 +2,7 @@
 title: 构建ppc64le架构docker
 date: 2019-11-10
 categories: docker
-tags: [linux, docker]
+tags: [linux, docker, ppc]
 ---
 
 
