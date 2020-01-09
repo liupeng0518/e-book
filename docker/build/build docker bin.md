@@ -755,3 +755,53 @@ index 6f9452d..0b279cc 100644
 ```
 
 EpollEvent 这个struct都需要添加PadFd，否则会有问题，例如docker exec 会卡住等。
+
+
+
+# 编译
+
+
+
+我这里是手工编译的，例如：
+
+dockerd/cli:
+
+```bash
+VERSION=v18.09.8 make
+VERSION=v18.09.8 GITCOMMIT=456712c5b8 ./hack/make.sh
+```
+
+runc:
+
+```shell
+make BUILDTAGS='seccomp apparmor' static
+```
+
+docker-proxy
+
+```
+CGO_ENABLED=0 go build -ldflags="-linkmode=external"         -o ./docker-proxy         github.com/docker/libnetwork/cmd/proxy
+```
+
+
+
+init:
+
+```
+cmake . && make tini-static
+```
+
+
+
+containerd:
+
+```
+make
+```
+
+
+
+# 构建deb
+
+这里二进制生成后，构建deb即可。
+
