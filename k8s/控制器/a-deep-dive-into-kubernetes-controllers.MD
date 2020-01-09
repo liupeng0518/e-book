@@ -195,8 +195,6 @@ workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter())
 
 ![](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/控制器/a-deep-dive-into-kubernetes-controllers.assets/eENdLY.jpg)
 
-
-
 如果处理事件失败，控制器就会调用 `AddRateLimited()` 函数将事件的 key 放回 `Workqueue` 以供后续重试（如果重试次数没有达到上限）。如果处理成功，控制器就会调用 `Forget()` 函数将事件的 key 从 `Workqueue` 中移除。**注意：该函数仅仅只是让 `Workqueue` 停止跟踪事件历史，如果想从 `Workqueue` 中完全移除事件，需要调用 `Done()` 函数。**
 
 现在我们知道，`Workqueue` 可以处理来自缓存的事件通知，但还有一个问题：**控制器应该何时启用 workers 来处理 `Workqueue` 中的事件呢？**
@@ -223,16 +221,10 @@ if !cache.WaitForCacheSync(stopCh, controller.HasSynched)
 controller.runWorker()
 ```
 
-
-
 所有处理流程如下所示：
 
 ![控制器处理事件的流程](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/控制器/a-deep-dive-into-kubernetes-controllers.assets/2019-06-29-033816.jpg)
 
-
-
 ## 4. 参考资料
-
-------
 
 - [A Deep Dive Into Kubernetes Controllers](https://engineering.bitnami.com/articles/a-deep-dive-into-kubernetes-controllers.html)
