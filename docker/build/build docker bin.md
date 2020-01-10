@@ -5,12 +5,17 @@ categories: docker
 tags: [docker, mips64el, source]
 ---
 
-目前需要在mips64el 3B4000 下适配编译UOS的18.09/18.06版本的docker-ce
+
+目前需要在mips64el 3B4000 下适配编译`UOS 20`的`docker-ce 18.09/18.06`版本。
 
 这里记录下18.06的编译，09如法炮制：
 
-# containerd
+# 编译环境
+- OS: UOS 20
+- ARCH: mips64el
+- go: 1.12.5
 
+# containerd
 ```
 ---
  Makefile.linux                                     |   2 +-
@@ -741,8 +746,6 @@ index 6f9452d..0b279cc 100644
 -- 
 ```
 
-
-
 # 注意
 
 ```go
@@ -753,52 +756,36 @@ index 6f9452d..0b279cc 100644
  	Pad    int32
  }
 ```
-
 EpollEvent 这个struct都需要添加PadFd，否则会有问题，例如docker exec 会卡住等。
 
-
-
 # 编译
-
-
-
 我这里是手工编译的，例如：
 
 dockerd/cli:
-
 ```bash
-VERSION=v18.09.8 make
 VERSION=v18.09.8 GITCOMMIT=456712c5b8 ./hack/make.sh
+VERSION=v18.09.8 make
 ```
 
 runc:
-
 ```shell
 make BUILDTAGS='seccomp apparmor' static
 ```
 
 docker-proxy
-
 ```
 CGO_ENABLED=0 go build -ldflags="-linkmode=external"         -o ./docker-proxy         github.com/docker/libnetwork/cmd/proxy
 ```
 
-
-
 init:
-
 ```
 cmake . && make tini-static
 ```
 
-
-
 containerd:
-
 ```
 make
 ```
-
 
 
 # 构建deb
