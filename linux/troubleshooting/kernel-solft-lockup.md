@@ -2,7 +2,7 @@
 title: kernel solft lockup
 date: 2019-02-24 09:47:19
 categories: linux
-tags: [centos7, linux， k8s]
+tags: [centos7, linux, k8s]
 ---
 
 
