@@ -110,3 +110,14 @@ server {
 $ sudo ln -s /var/spool/pypi-mirror /var/www/html/pypi
 ```
 error: 新版的pip可能出现识别"_"和"-"的问题, 可以手动修改dir2pi创建的xml解决。
+
+
+
+# 问题处理
+
+构建whl时可能缺少开发库报错
+
+```bash
+apt install python3 python-dev python3-dev build-essential libssl-dev libffi-dev libxml2-dev libxslt1-dev zlib1g-dev python-pip
+
+```

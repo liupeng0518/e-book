@@ -768,11 +768,18 @@ VERSION=v18.09.8 make
 ```
 
 runc:
-```shell
-make BUILDTAGS='seccomp apparmor' static
+
+~~make BUILDTAGS='seccomp apparmor' static~~
+
+
+这里注意如果静态编译runc/docker的话，是不支持systemd的cgroup driver。相关[issues](https://github.com/moby/moby/issues/38753#issuecomment-465290976)。
+
+```
+make BUILDTAGS='seccomp apparmor'
 ```
 
 docker-proxy
+
 ```
 CGO_ENABLED=0 go build -ldflags="-linkmode=external"         -o ./docker-proxy         github.com/docker/libnetwork/cmd/proxy
 ```
