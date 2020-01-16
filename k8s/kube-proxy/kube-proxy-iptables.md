@@ -45,7 +45,7 @@ Kubernetes中一个应用服务会有一个或多个实例（Pod）,每个实例
 
 1. 前3种模式，定义服务的时候通过`selector`指定服务对应的pods，根据pods的地址创建出`endpoints`作为服务后端；`Endpoints Controller`会watch Service以及pod的变化，维护对应的Endpoint信息。kube-proxy根据Service和Endpoint来维护本地的路由规则。当Endpoint发生变化，即Service以及关联的pod发生变化，kube-proxy都会在每个节点上更新iptables，实现一层负载均衡。
 
-   ![svc](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/Network/Kubernetes Service.assets/k8s-svc.jpg)
+   ![svc](https://raw.githubusercontent.com/liupeng0518/e-book/master/k8s/kube-proxy/kube-proxy.assets/k8s-svc.jpg)
 
    而`ExternalName`模式则不指定`selector`，相应的也就没有`port`和`endpoints`。
 
@@ -94,7 +94,7 @@ kube-proxy 当前支持以下3种实现模式：
 
 kube-proxy详细介绍可查看：[kube-proxy](http://liupeng0518.github.io/2019/05/29/k8s/组件/kube-proxy/)
 
-
+# 流量分析
 
 这里的实验环境k8s1.14.5+calico3.4.0(bgp模式)，这里选择bgp主要是方便分析，因为ipip模式流量会流经tunl网卡。
 
