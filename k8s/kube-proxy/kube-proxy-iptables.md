@@ -1,5 +1,5 @@
 ---
-title: kube-proxy
+title: kube-proxy -- iptables
 categories: k8s
 tags: [k8s, kube-proxy, service]
 date: 2019-10-11 09:47:19
