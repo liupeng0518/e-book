@@ -47,6 +47,7 @@ ipset比传统的iptables拥有显著的性能提升和扩展特性，比如将�
 一个规则链就是许多规则按顺序排列组成，一个规则就是match/target 的组合。一个简单的match例子是“TCP 目标端口为80”。target的例子是“接受这个包”。target同样可以将数据包重定向到其他的用户自定义的链，用户自定义链提供了一些机制，包括组合和细分规则，将多个链级联来完成一个功能。
 
  每一个用来定义规则的iptables命令，不管是用于简单的规则还是复杂的规则，都有三个基本的部分组成，包括指定table/chain (and order)， match 和 target。
+
 ![img](https://raw.githubusercontent.com/liupeng0518/e-book/master/linux/安全/ipset.assets/21706718_1364894464l7gE.png) 
 
 Figure 2. 解析iptables 命令 
