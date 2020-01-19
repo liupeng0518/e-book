@@ -6,8 +6,6 @@ tags: [linux, iptables]
 ---
 原文：http://blog.chinaunix.net/uid-21706718-id-3561951.html
 
-[ipset](http://ipset.netfilter.org/)
-
 # Advanced Firewall Configurations with ipset
 
 http://www.linuxjournal.com/content/advanced-firewall-configurations-ipset
@@ -68,14 +66,12 @@ iptables -A INPUT -s 2.2.2.2 -j DROP
 
 match 部分语法 -s 1.1.1.1 表示“匹配源地址是1.1.1.1的数据包”。 
 下面的ipset/iptables命令同样可以达到上面的目的： 
-
+```
 ipset -N myset iphash 
-
 ipset -A myset 1.1.1.1 
-
 ipset -A myset 2.2.2.2
-
 iptables -A INPUT -m set --set myset src -j DROP 
+```
 
 上面的ipset命令创建了一个包含两个地址(1.1.1.1 and 2.2.2.2)的集合(myset of type iphash)。 然后iptables命令通过-m set --set myset src这个match选项使用这个集合，这个匹配规则的意思是“匹配源地址包含在集合myset中的数据包” src 表示源地址，dst表示目标地址。如果同时使用 src 和 dst 表示既要匹配源地址又要匹配目的地址。 
 
@@ -92,21 +88,17 @@ setlist是一个特别的集合类型，它允许组织多个集合到一个集�
 除了性能优势，一些情况下ipset允许更直接的配置方法。 
 
 如果你想定义一个防火墙环境，该环境不会处理来自1.1.1.1和2.2.2.2的包，并且处理过程包含在mychain中，注意下面的方法是无效的： 
-
+```
 iptables -A INPUT -s ! 1.1.1.1 -g mychain 
-
 iptables -A INPUT -s ! 2.2.2.2 -g mychain 
-
+```
 如果数据包来自1.1.1.1，它匹配第一条规则失败，但是匹配第二条规则时会成功。如果数据包来自2.2.2.2，匹配第一个规则就会成功。 虽然有有一些其它的方法可以不适用ipset就能达到指定的要求，但是ipset是最直接了当的。 
-
+```
 ipset -N myset iphash 
-
 ipset -A myset 1.1.1.1 
-
 ipset -A myset 2.2.2.2 
-
 iptables -A INPUT -m set ! --set myset src -g mychain 
-
+```
 用上面的方法，如果数据包来自1.1.1.1，它不会匹配规则(because the source address 1.1.1.1 does match the set myset)。如果数据包来自2.2.2.2，它也不会匹配规则。 
 
 这只是一个简单的例子，它说明在一个规则里匹配完整条件的基本优点。其他方面，每个iptables规则与其它规则是独立的，并且将规则逻辑的连接起来是比较难的，特别当它包含混合了正常和反向测试时。ipset只是在这些情况下使配置变简单。
@@ -122,17 +114,17 @@ Outbound NAT (SNAT 或 IP 伪装)允许私有局域网内的主机访问internet
 NAT自动跟踪活动的连接，所以它能将返回的包发送给正确的内网主机（通过将数据包的目的地址修改为内部主机地址）。
 
 下面是一个简单的outbound NAT规则，10.0.0.0/24是内部局域网：
-
+```
 iptables -t nat -A POSTROUTING \
      -s 10.0.0.0/24 -j MASQUERADE
-
+```
 该规则匹配所有来自内网的包，并对他们进行伪装。如果只有一个路由连接到internat这种方法是非常有效率的，通过该路有的所有流量都是公网的流量。然而，如果有连接到其它私有网络的路由存在，比如VPN或无力WAN连接，你可能就不会使用地址伪装。
 
 克服这个限制的一个简单方法是基于物理接口建立NAT规则，而不是使用基于网络地址的方式。
-
+```
 iptables -t nat -A POSTROUTING \
      -o eth0 -j MASQUERADE
-
+```
 该规则假设eth0是外部接口，该规则会匹配所有离开这个接口的包。与前面的规则不同的是，其他内网的数据包通过其它接口访问公网时不会匹配这条规则（比如OpenVPN的连接）。
 
 虽然许多连接是通过不同的接口路由，但并不能假设所有的链接都是这样。一个例子是基于KAME的IPsec VPN连接(比如 Openswan)就不是使用虚拟接口。
@@ -143,7 +135,7 @@ iptables -t nat -A POSTROUTING \
 
 后来发现，ipset还有另一个应用。假设有一个本地LAN (10.0.0.0/24)需要连接到internet，除此之外还有三个本地网络(10.30.30.0/24, 10.40.40.0/24, 192.168.4.0/23 和 172.22.0.0/22)，执行下面的命令：
 
-
+```
 ipset -N routed_nets nethash
 ipset -A routed_nets 10.30.30.0/24
 ipset -A routed_nets 10.40.40.0/24
@@ -153,7 +145,7 @@ iptables -t nat -A POSTROUTING \
      -s 10.0.0.0/24 \
      -m set ! --set routed_nets dst \
      -j MASQUERADE
-
+```
 如我们所见，ipset 简单的实现了精确匹配。该规则伪装所有来自(10.0.0.0/24)的数据包，而不处理其他在routed_nets集合中的网络的包。由于该配置完全基于网络地址，所以你完全不用担心其他特殊的网络连接（比如VPN），也不用担心物理接口和网络拓扑。
 
 # Limiting Certain PCs to Have Access Only to Certain Public Hosts
@@ -161,6 +153,7 @@ iptables -t nat -A POSTROUTING \
 假设老板较关心员工上班时间上网问题，请你限制员工的PC只能访问指定的几个网站，但是不想所有的内部PC都受到限制。
 
 限制3台PC (10.0.0.5, 10.0.0.6 and 10.0.0.7)只能访问worksite1.com，worksite2.com 和 worksite3.com。执行下面的命令：
+```
 ipset -N limited_hosts iphash
 ipset -A limited_hosts 10.0.0.5
 ipset -A limited_hosts 10.0.0.6
@@ -173,7 +166,7 @@ iptables -I FORWARD \
      -m set --set limited_hosts src \
      -m set ! --set allowed_sites dst \
      -j DROP
-
+```
 该例子在一条规则里使用了两个集合。如果源地址匹配limited_hosts 目的地址不匹配allowed_sites，数据包就被丢弃。
 
 注意该规则被添加到了FORWARD链，它不会影响防火墙主机自己的通信。
@@ -183,7 +176,7 @@ iptables -I FORWARD \
 假设老板想阻止员工访问几个特定的网站，但是不阻止他自己的PC和他助理的PC。在这个例子里，我们可以匹配老板和助理的PC的MAC地址，而不是匹配IP地址。假设他们的MAC是11:11:11:11:11:11 和 22:22:22:22:22:22，需要组织员工访问的站点是badsite1.com, badsite2.com 和 badsite3.com.
 
 这次我们不使用第二个集合匹配MAC地址，而是使用多个iptables命令，利用MARK target标记数据包，而利用后面的规则处理被标记的数据包。
-
+```
 ipset -N blocked_sites iphash
 ipset -A blocked_sites badsite1.com
 ipset -A blocked_sites badsite2.com
@@ -200,7 +193,7 @@ iptables -I FORWARD \
 iptables -I FORWARD \
      -m set --set blocked_sites dst \
      -j MARK --set-mark 0x187
-
+```
 上面的例子，由于没有使用ipset完成所有的匹配工作，所以使用的命令比较多，而且比较复杂。由于用到了多个iptables命令，所以各个命令的顺序是非常重要的。
 
 注意这些规则是使用—I (insert)选项而不是使用-A (append)选项。当一个规则被插入，他会被添加的链的顶端，而以前的规则自动下移。因为每一格规则都是被插入德，所以实际的有效顺序是相反的。
@@ -222,7 +215,7 @@ iptables -I FORWARD \
 ipset为iptables提供了目标扩展功能，它提供了一种向集合动态添加和删除目标的机制。不必手动使用ipset命令添加目标，而是在运行时通过iptables自动添加。
 
 比如，如果远程主机尝试连接端口25，但是你并没有运行SMTP服务，我们怀疑对方不怀好意，所以我们在对方还没有干什么坏事前就组织他的其他尝试，使用下面的规则：
-
+```
 ipset -N banned_hosts iphash
 iptables -A INPUT \
      -p tcp --dport 25 \
@@ -230,11 +223,11 @@ iptables -A INPUT \
 iptables -A INPUT \
      -m set --set banned_hosts src \
      -j DROP
-
+```
 如果从端口25接收到数据包，假设来源地址是1.1.1.1，那么该地址马上就被添加到banned_hosts集合，和下面的例子等效：
-
+```
 ipset -A banned_hosts 1.1.1.1
-
+```
 所有的1.1.1.1的连接都会被阻塞。
 
 他同样会阻止其他主机对本设备进行端口扫描，除非他不扫描25号端口。
@@ -242,7 +235,7 @@ ipset -A banned_hosts 1.1.1.1
 # Clearing the Running Config
 
 如果你想清除ipset和iptables的配置，将防火墙reset，运行下面的命令：
-
+```
 iptables -P INPUT ACCEPT
 iptables -P OUTPUT ACCEPT
 iptables -P FORWARD ACCEPT
@@ -252,7 +245,7 @@ iptables -t nat -F
 iptables -t mangle -F
 ipset -F
 ipset -X
-
+```
 如果集合正在被使用，意味着其它的iptables规则正在引用该集合，就不能对集合进行销毁（ipset -X)，所以为了在任何状态下都完成reset，iptables链必须首先清除。
 
 # Conclusion
