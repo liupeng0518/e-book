@@ -5,7 +5,7 @@ tags: [kubernetes, kube-proxy, iptables]
 date: 2019-11-29 09:47:19
 ---
 
-在访问 k8s 服务时，有时会出现一直连不上的问题，我们可以通过分析 iptables 和抓包的方式观察报文是否正确到达。关于 iptable 的介绍可以参考：[iptables](https://www.dazhuanlan.com/2018/06/29/iptables/)
+在访问 k8s 服务时，有时会出现一直连不上的问题，我们可以通过分析 iptables 和抓包的方式观察报文是否正确到达。
 
 ## Iptables 跟踪
 
@@ -280,3 +280,5 @@ MASQUERADE  all  --  0.0.0.0/0            0.0.0.0/0            /* kubernetes ser
 ## 参考文献
 
 [1] [How to trace IPTables](http://www.opensourcerers.org/how-to-trace-iptables-in-rhel7-centos7/)
+
+原文：https://www.dazhuanlan.com/2019/10/22/5daee17b80349/
