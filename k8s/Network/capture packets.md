@@ -41,7 +41,7 @@ nsenter -n --target <PID>
 
 # some namespaces
 
-通常连接Docker容器并与其进行交互有四种方法。详情见：[](https://github.com/berresch/Docker-Enter-Demo)，下面摘录nsenter连接的方式。
+通常连接Docker容器并与其进行交互有四种方法。详情见：[Docker Enter Demo](https://github.com/berresch/Docker-Enter-Demo)，下面摘录nsenter连接的方式。
 
 查看是否安装nsenter
 [root@localhost ~]# whereis nsenter
