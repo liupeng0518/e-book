@@ -1,7 +1,7 @@
 ---
 title: xfs lvm扩容磁盘
 date: 2015-02-10 09:47:19
-categories: xfs
+categories: disk
 tags: [xfs, linux]
 ---
 
