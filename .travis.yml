@@ -23,7 +23,7 @@ before_install:
 - ssh-add ~/.ssh/id_rsa
 - df -h
 install:
-- npm install hexo-cli -g
+- npm install hexo-cli@3.1.0 -g
 - npm install
 script:
 - bash -x git-book-blog.sh
