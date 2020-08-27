@@ -33,10 +33,10 @@ done
 cd ${BLOG}
 rm -rf node_modules/
 npm cache clean --force
-npm install hexo-filter-mermaid-diagrams --save
-npm install --save hexo-filter-flowchart
-npm install hexo-deployer-git --save
-npm install hexo-generator-feed --save
+npm install hexo-filter-mermaid-diagrams@1.0.5 --save
+npm install --save hexo-filter-flowchart@1.0.4
+npm install hexo-deployer-git@2.1.0 --save
+npm install hexo-generator-feed@2.2.0 --save
 
 npm install
 
