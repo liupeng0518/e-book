@@ -5,7 +5,9 @@ categories: terraform
 tags: [terraform]
 
 ---
-原为：https://int32bit.me/2019/10/09/%E6%B7%B7%E5%90%88%E4%BA%91%E7%BC%96%E6%8E%92%E5%B7%A5%E5%85%B7Terrafrom%E7%AE%80%E4%BB%8B/
+
+原文：https://int32bit.me/2019/10/09/%E6%B7%B7%E5%90%88%E4%BA%91%E7%BC%96%E6%8E%92%E5%B7%A5%E5%85%B7Terrafrom%E7%AE%80%E4%BB%8B/
+
 ## 1 Terraform背景
 
 ### 1.1 混合云编排
