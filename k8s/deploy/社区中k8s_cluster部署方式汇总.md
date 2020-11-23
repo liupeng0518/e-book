@@ -26,19 +26,9 @@ https://github.com/wise2c-devops/breeze
 
 深圳睿云智合开源的项目，支持图形化部署。
 
+## kubeoperator
 
-# 存储
-## glusterfs
-
-## ceph
-
-## nfs
+此项目是基于kubeeasz开发的，支持集群部署。
 
 
-
-# 业务及中间件
-
-## helm
-
-## manifest
 
