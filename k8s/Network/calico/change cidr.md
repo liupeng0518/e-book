@@ -1,11 +1,4 @@
----
-title: 就绪的k8s集群中修改cluster cidr
-categories: k8s
-tags: [kubernetes, calico, network]
-date: 2020-11-19 09:47:19
----
-
-> 参考文章：https://stackoverflow.com/questions/60176343/how-to-make-the-pod-cidr-range-larger-in-kubernetes-cluster-deployed-with-kubead
+> 原文：https://stackoverflow.com/questions/60176343/how-to-make-the-pod-cidr-range-larger-in-kubernetes-cluster-deployed-with-kubead
 
 # 背景
 这里是使用的`kubespray`部署的大规模集群，集群网络插件calico，并使用etcd做calico后端。
@@ -80,6 +73,7 @@ natOutgoing: true
 ```
 
 > Note: 这里为了提高可读性，并防止apply出错，可以删除一些无用的字段
+> blockSize大小注意默认是/26
 
 修改文件将旧的ippool`default-ipv4-ippool`禁用,  `disabled: true` :
 
@@ -151,6 +145,12 @@ spec:
 只需替换$hostname/$ipcidr/$role即可，首先获取原集群这hostname和role的对应关系
 
 ```shell
+node=`kubectl get node -owide |awk '{print $1}'|grep -v NAME`
+for i in $node; do
+    CIDR=`kubectl get node $i -oyaml|grep podCIDR|grep -v podCIDRs|awk '{print $NF}'`
+    roles=`kubectl get node $i -oyaml|grep node-role`
+    echo $i,$CIDR,$roles
+done
 
 ```
 
@@ -199,7 +199,7 @@ echo $host_template
 
 我们必须对我们拥有的每个节点执行此操作。注意IP范围，它们在每一个节点之间是不同的。
 
-4. 修改   kubeadm-config ConfigMap 和 kube-controller-manager.yaml 的CIDR
+4. 修改   kube-proxy \ kubeadm-config ConfigMap 和 kube-controller-manager.yaml 的CIDR
 
 编辑 kubeadm-config ConfigMap 并 修改 podSubnet 至新IP Range:
 
@@ -243,7 +243,7 @@ spec:
     - --use-service-account-credentials=true
 ```
 
-5. 修改calico配置`ipv4_pools` /etc/cni/net.d/10-calico.conflist 
+5. 修改calico配置`ipv4_pools` /etc/cni/net.d/10-calico.conflist 和 /etc/cni/net.d/calico.conflist.template
 
 6. 重启所有pod:
 
@@ -273,37 +273,36 @@ To tune Calico before applying, you have to download it's yaml file and change t
 
 1. Download the Calico networking manifest for the Kubernetes.
 
-   ```yaml
+```yaml
    $ curl https://docs.projectcalico.org/manifests/calico.yaml -O
-   ```
+```
 
 2. If you are using pod CIDR
 
-   ```
+```
 192.168.0.0/24
-   ```
-   
+```
+
    , skip to the next step. If you are using a different pod CIDR, use the following commands to set an environment variable called
 
-   ```
+```
 POD_CIDR
-   ```
+```
 
    containing your pod CIDR and replace
    
-   ```
+```
 192.168.0.0/24
-   ```
-
+```
    in the manifest with your pod CIDR.
 
-   ```yaml
+```yaml
 $ POD_CIDR="<your-pod-cidr>" \
    sed -i -e "s?192.168.0.0/16?$POD_CIDR?g" calico.yaml
-   ```
+```
    
 3. Apply the manifest using the following command.
 
-   ```yaml
+```yaml
    $ kubectl apply -f calico.yaml
-   ```
+```
