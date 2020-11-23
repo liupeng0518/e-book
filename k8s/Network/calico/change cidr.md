@@ -1,3 +1,9 @@
+---	
+title: 就绪的k8s集群中修改cluster cidr	
+categories: k8s	
+tags: [kubernetes, calico, network]	
+date: 2020-11-19 09:47:19	
+---
 > 原文：https://stackoverflow.com/questions/60176343/how-to-make-the-pod-cidr-range-larger-in-kubernetes-cluster-deployed-with-kubead
 
 # 背景
