@@ -1,5 +1,5 @@
 ---
-title: ivpsadm使用
+title: ipvsadm使用
 date: 2020-02-10 09:47:19
 categories: lvs
 tags: [ipvs, lvs, linux]
