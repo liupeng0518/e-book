@@ -86,5 +86,3 @@ tags: [cicd, maven]
   <activeProfiles/>
 </settings>
 ```
-
-
