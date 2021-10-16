@@ -1,5 +1,6 @@
 #!/bin/bash
-#
+# new version v0.1
+# need change to github actions
 # 同步提交个人博客和gitbook
 # liupeng0518@gmail.com
 #
